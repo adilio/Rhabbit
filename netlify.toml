@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+# habit.4dl.ca is an alias that permanently redirects to the canonical host
+[[redirects]]
+  from = "https://habit.4dl.ca/*"
+  to = "https://rhabbit.4dl.ca/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
