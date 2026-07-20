@@ -4,6 +4,7 @@ import { useStore } from "../lib/store";
 import { useToast } from "../components/Toast";
 import { HopPath } from "../components/HopPath";
 import { RabbitMark } from "../components/RabbitMark";
+import { TimeGlyph } from "../components/TimeGlyph";
 import { IconCheck, IconPlus } from "../components/Icons";
 import { HabitEditor } from "../components/HabitEditor";
 import { HabitSheet } from "../components/HabitSheet";
@@ -173,7 +174,10 @@ export function Today() {
           return (
             <section key={tod} className="group">
               <p className="group-label">
-                <span>{TIME_OF_DAY_LABELS[tod]}</span>
+                <span className="group-label-text">
+                  <TimeGlyph time={tod} className="group-glyph" />
+                  {TIME_OF_DAY_LABELS[tod]}
+                </span>
                 <span>
                   {groupDone}/{group.length}
                 </span>

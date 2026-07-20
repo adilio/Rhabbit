@@ -35,7 +35,7 @@
   --rabbit-ear: #e8b9bc;
   --font-body: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", sans-serif;
-  --font-display: "Space Grotesk Variable", var(--font-body);
+  --font-display: "Fraunces Variable", var(--font-body);
   --radius: 20px;
   --radius-lg: 28px;
   --shadow-card: 0 2px 8px rgb(41 37 34 / 0.08);
@@ -85,6 +85,22 @@
 
 html {
   min-height: 100%;
+}
+
+/* Fraunces display face: let optical sizing track the font-size (sturdier at
+   large headings, crisper at small sheet titles) and nudge the SOFT axis up
+   for storybook warmth. Numbers stay on Inter — see .stat-value. */
+.brand-name,
+.card-title,
+.today-greeting,
+.sheet-head h2,
+.login h1,
+.login-tagline,
+.cal-title,
+.page-title,
+.empty h2 {
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 100;
 }
 
 html,
@@ -518,6 +534,18 @@ button {
   letter-spacing: 0.01em;
   color: color-mix(in srgb, var(--sky) 54%, var(--text-muted));
   margin: 0 4px 11px;
+}
+
+.group-label-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.group-glyph {
+  width: 14px;
+  height: 14px;
+  flex: none;
 }
 
 .habit-list {
@@ -1265,10 +1293,11 @@ textarea::placeholder {
 }
 
 .stat-value {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 .stat-label {
