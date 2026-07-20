@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Private app: only Google accounts whose email exists in the
+    // allowlist collection may read or write anything.
+    function allowlisted() {
+      return request.auth != null
+        && request.auth.token.email_verified
+        && exists(/databases/$(database)/documents/allowlist/$(request.auth.token.email));
+    }
+
+    // Allowlist docs are managed in the Firebase console only.
+    match /allowlist/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+      allow write: if false;
+    }
+
+    // Each user owns their subtree: profile, habits, entries, importBatches.
+    match /users/{uid}/{document=**} {
+      allow read, write: if allowlisted() && request.auth.uid == uid;
+    }
+  }
+}
