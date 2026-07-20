@@ -27,6 +27,8 @@
   --red: #a26d6d;
   --blue: #5e86a4;
   --ring-track: #efe7da;
+  --carrot: #e08b3c;
+  --carrot-leaf: #6f9a54;
   --ink-on-accent: #ffffff;
   --rabbit-outline: #3a4550;
   --rabbit-fur: #cfdfec;
@@ -65,6 +67,8 @@
   --red: #d29595;
   --blue: #88abc3;
   --ring-track: #3b342e;
+  --carrot: #e8a05a;
+  --carrot-leaf: #9cbb84;
   --ink-on-accent: #1f1b18;
   --rabbit-outline: #eef3f7;
   --rabbit-fur: #9db4c8;
@@ -353,10 +357,10 @@ button {
 
 .today-hero {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 28px 2px 22px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding: 28px 2px 20px;
 }
 
 .today-greeting {
@@ -380,38 +384,123 @@ button {
   margin: 6px 0 0;
 }
 
-.ring {
+/* ===== The hop path — signature progress element ======================== */
+
+.hoppath {
+  width: 100%;
+}
+
+.hoppath-frame {
   position: relative;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
+  width: 100%;
+  padding: 6px 2px 2px;
 }
 
-.ring svg {
-  transform: rotate(-90deg);
+.hoppath-track {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
 }
 
-.ring-track {
-  stroke: var(--ring-track);
+.hoppath-trail {
+  stroke: var(--border-strong);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1 7;
 }
 
-.ring-fill {
+.hoppath-burrow {
+  fill: color-mix(in srgb, var(--sky-wash) 60%, var(--border-strong));
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+
+.hoppath-stone ellipse {
+  fill: var(--bg-raised);
+  stroke: var(--border-strong);
+  stroke-width: 2;
+  transition:
+    fill 0.35s ease,
+    stroke 0.35s ease;
+}
+
+.hoppath-stone.is-lit ellipse {
+  fill: var(--sky-soft);
   stroke: var(--sky);
-  transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ring-fill.ring-done {
+.is-complete .hoppath-stone.is-lit ellipse {
+  fill: color-mix(in srgb, var(--green) 22%, var(--bg-raised));
   stroke: var(--green);
 }
 
-.ring-label {
+.hoppath-check {
+  stroke: var(--sky);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-complete .hoppath-check {
+  stroke: var(--green);
+}
+
+.hoppath-carrot-body {
+  fill: color-mix(in srgb, var(--carrot) 45%, var(--bg-raised));
+  stroke: color-mix(in srgb, var(--carrot) 55%, var(--border-strong));
+  stroke-width: 1.5;
+  transition:
+    fill 0.35s ease,
+    stroke 0.35s ease;
+}
+
+.hoppath-carrot-leaf {
+  stroke: color-mix(in srgb, var(--carrot-leaf) 60%, var(--border-strong));
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.is-complete .hoppath-carrot {
+  animation: carrot-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-complete .hoppath-carrot-body {
+  fill: var(--carrot);
+  stroke: color-mix(in srgb, var(--carrot) 70%, #000);
+}
+
+.is-complete .hoppath-carrot-leaf {
+  stroke: var(--carrot-leaf);
+}
+
+@keyframes carrot-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.hoppath-rabbit {
   position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.95rem;
+  transform: translate(-50%, -78%);
+  transition: left 0.28s cubic-bezier(0.33, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.hoppath-rabbit-mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 2px rgb(41 37 34 / 0.14));
 }
 
 /* ===== Habit groups & rows =============================================== */

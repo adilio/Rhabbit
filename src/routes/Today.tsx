@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useAuth } from "../lib/auth";
 import { useStore } from "../lib/store";
 import { useToast } from "../components/Toast";
-import { Ring } from "../components/Ring";
+import { HopPath } from "../components/HopPath";
 import { RabbitMark } from "../components/RabbitMark";
 import { IconCheck, IconPlus } from "../components/Icons";
 import { HabitEditor } from "../components/HabitEditor";
@@ -138,7 +138,7 @@ export function Today() {
   return (
     <>
       <div className="today-hero">
-        <div>
+        <div className="today-hero-head">
           <h1 className="today-greeting">
             {greeting(profile?.displayName ?? "friend")}
           </h1>
@@ -151,7 +151,7 @@ export function Today() {
             </p>
           )}
         </div>
-        <Ring done={doneCount} total={countable} />
+        {countable > 0 && <HopPath done={doneCount} total={countable} />}
       </div>
 
       {relevant.length === 0 ? (
