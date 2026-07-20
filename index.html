@@ -17,6 +17,26 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Rhabbit" />
     <meta name="theme-color" content="#fcfaf5" />
+    <script>
+      // Stamp the theme before first paint so dark-mode users never flash light
+      (function () {
+        try {
+          var pref = localStorage.getItem("rhabbit-theme") || "system";
+          var mode =
+            pref === "system"
+              ? matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light"
+              : pref;
+          document.documentElement.dataset.theme = mode;
+          if (mode === "dark") {
+            document
+              .querySelector('meta[name="theme-color"]')
+              .setAttribute("content", "#1f1b18");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta property="og:title" content="Rhabbit" />
     <meta property="og:description" content="Take it one hop at a time." />
     <meta property="og:url" content="https://rhabbit.4dl.ca/" />
