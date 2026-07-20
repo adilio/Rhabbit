@@ -48,7 +48,7 @@ export function Insights() {
 
   return (
     <>
-      <h1 className="page-title">Insights</h1>
+      <h1 className="page-title">Progress</h1>
 
       <div className="card">
         <h2 className="card-title">Your week</h2>

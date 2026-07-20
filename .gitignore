@@ -8,3 +8,4 @@ dev-dist
 .netlify
 .DS_Store
 *.local
+test-artifacts/

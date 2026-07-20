@@ -18,6 +18,9 @@ import {
   IconSettings,
   IconToday,
 } from "./components/Icons";
+import { RabbitMark } from "./components/RabbitMark";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { PwaStatus } from "./components/PwaStatus";
 
 export function App() {
   const { user, profile, denied } = useAuth();
@@ -34,8 +37,35 @@ export function App() {
   if (!profile) return <Onboarding />;
 
   return (
-    <>
-      <div className="shell">
+    <div className="app-frame">
+      <aside className="sidebar" aria-label="Rhabbit navigation">
+        <NavLink to="/" className="sidebar-brand">
+          <RabbitMark className="sidebar-mark" />
+          <span>
+            <strong>Rhabbit</strong>
+            <small>Take it one hop at a time</small>
+          </span>
+        </NavLink>
+        <nav className="sidebar-links" aria-label="Main">
+          <Tab to="/" label="Today" icon={<IconToday />} />
+          <Tab to="/history" label="History" icon={<IconCalendar />} />
+          <Tab to="/insights" label="Progress" icon={<IconInsights />} />
+          <Tab to="/settings" label="Settings" icon={<IconSettings />} />
+        </nav>
+        <div className="sidebar-footer">
+          <ThemeToggle />
+          <div className="sidebar-signature">A <strong>4dl</strong> App</div>
+        </div>
+      </aside>
+      <main className="app-main">
+        <header className="mobile-header">
+          <NavLink to="/" className="brand">
+            <RabbitMark className="brand-mark" />
+            <span className="brand-name">Rhabbit</span>
+          </NavLink>
+          <ThemeToggle />
+        </header>
+        <div className="shell">
         <Routes>
           <Route path="/" element={<Today />} />
           <Route path="/history" element={<History />} />
@@ -53,14 +83,16 @@ export function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </div>
+        </div>
+      </main>
       <nav className="tabbar" aria-label="Main">
         <Tab to="/" label="Today" icon={<IconToday />} />
         <Tab to="/history" label="History" icon={<IconCalendar />} />
-        <Tab to="/insights" label="Insights" icon={<IconInsights />} />
+        <Tab to="/insights" label="Progress" icon={<IconInsights />} />
         <Tab to="/settings" label="Settings" icon={<IconSettings />} />
       </nav>
-    </>
+      <PwaStatus />
+    </div>
   );
 }
 

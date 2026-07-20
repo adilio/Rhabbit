@@ -20,6 +20,7 @@ import {
 import { db } from "./firebase";
 import { useAuth } from "./auth";
 import type { Entry, Habit, ImportBatch } from "./types";
+import { demoEntries, demoHabits, isDemoMode } from "./demo";
 
 interface Store {
   habits: Habit[] | undefined;
@@ -45,12 +46,13 @@ const StoreContext = createContext<Store>(null as never);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const uid = user?.uid;
-  const [habits, setHabits] = useState<Habit[] | undefined>(undefined);
-  const [entries, setEntries] = useState<Entry[]>([]);
-  const [entriesLoaded, setEntriesLoaded] = useState(false);
+  const [habits, setHabits] = useState<Habit[] | undefined>(isDemoMode ? demoHabits : undefined);
+  const [entries, setEntries] = useState<Entry[]>(isDemoMode ? demoEntries : []);
+  const [entriesLoaded, setEntriesLoaded] = useState(isDemoMode);
   const [batches, setBatches] = useState<ImportBatch[]>([]);
 
   useEffect(() => {
+    if (isDemoMode) return;
     if (!uid) {
       setHabits(undefined);
       setEntries([]);
@@ -91,6 +93,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   const saveHabit = async (h: Omit<Habit, "id"> & { id?: string }) => {
+    if (isDemoMode) {
+      const id = h.id ?? `demo-${Date.now()}`;
+      setHabits((current) => [...(current ?? []).filter((item) => item.id !== id), { ...h, id } as Habit].sort((a, b) => a.position - b.position));
+      return id;
+    }
     if (!uid) throw new Error("not signed in");
     const { id, ...data } = h;
     const ref = id
@@ -101,6 +108,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteHabit = async (id: string) => {
+    if (isDemoMode) {
+      setHabits((current) => (current ?? []).filter((h) => h.id !== id));
+      setEntries((current) => current.filter((e) => e.habitId !== id));
+      return;
+    }
     if (!uid) throw new Error("not signed in");
     await deleteDoc(doc(db, "users", uid, "habits", id));
     const mine = entries.filter((e) => e.habitId === id);
@@ -114,6 +126,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const setEntry = async (habitId: string, date: string, patch: Partial<Entry>) => {
+    if (isDemoMode) {
+      setEntries((current) => {
+        const next: Entry = { habitId, date, status: null, value: null, note: "", completedAt: null, importBatchId: null, ...patch };
+        return [...current.filter((e) => !(e.habitId === habitId && e.date === date)), next];
+      });
+      return;
+    }
     if (!uid) throw new Error("not signed in");
     await setDoc(
       doc(db, "users", uid, "entries", `${habitId}_${date}`),
@@ -123,6 +142,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const clearEntry = async (habitId: string, date: string) => {
+    if (isDemoMode) {
+      setEntries((current) => current.filter((e) => !(e.habitId === habitId && e.date === date)));
+      return;
+    }
     if (!uid) throw new Error("not signed in");
     await deleteDoc(doc(db, "users", uid, "entries", `${habitId}_${date}`));
   };

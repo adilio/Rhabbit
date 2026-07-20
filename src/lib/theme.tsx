@@ -10,8 +10,10 @@ export type ThemePref = "system" | "dark" | "light";
 
 const ThemeContext = createContext<{
   pref: ThemePref;
+  mode: "dark" | "light";
   setPref: (p: ThemePref) => void;
-}>({ pref: "system", setPref: () => {} });
+  toggle: () => void;
+}>({ pref: "system", mode: "light", setPref: () => {}, toggle: () => {} });
 
 const STORAGE_KEY = "rhabbit-theme";
 
@@ -27,18 +29,25 @@ function apply(pref: ThemePref) {
   document.documentElement.dataset.theme = mode;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute("content", mode === "light" ? "#f7f4ee" : "#0b0d12");
+    ?.setAttribute("content", mode === "light" ? "#fcfaf5" : "#1f1b18");
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [pref, setPrefState] = useState<ThemePref>(
     () => (localStorage.getItem(STORAGE_KEY) as ThemePref) || "system",
   );
+  const [mode, setMode] = useState<"dark" | "light">(() => resolve(pref));
 
   useEffect(() => {
     apply(pref);
+    setMode(resolve(pref));
     const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const onChange = () => pref === "system" && apply(pref);
+    const onChange = () => {
+      if (pref === "system") {
+        apply(pref);
+        setMode(resolve(pref));
+      }
+    };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, [pref]);
@@ -48,8 +57,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setPrefState(p);
   };
 
+  const toggle = () => setPref(mode === "dark" ? "light" : "dark");
+
   return (
-    <ThemeContext.Provider value={{ pref, setPref }}>
+    <ThemeContext.Provider value={{ pref, mode, setPref, toggle }}>
       {children}
     </ThemeContext.Provider>
   );

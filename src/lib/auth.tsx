@@ -14,6 +14,7 @@ import {
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "./firebase";
 import type { Profile } from "./types";
+import { demoProfile, isDemoMode } from "./demo";
 
 interface AuthState {
   /** undefined = still resolving, null = signed out */
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
   useEffect(() => {
+    if (isDemoMode) return;
     if (!user) {
       setProfile(user === null ? null : undefined);
       setDenied(false);
@@ -58,6 +60,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     return unsub;
   }, [user]);
+
+  if (isDemoMode) {
+    return (
+      <AuthContext.Provider
+        value={{
+          user: { uid: "demo", email: demoProfile.email } as User,
+          profile: demoProfile,
+          denied: false,
+          signIn: async () => {},
+          signOut: async () => {},
+          saveProfile: async () => {},
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
   const signIn = async () => {
     await signInWithPopup(auth, googleProvider);
