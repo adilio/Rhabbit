@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useAuth } from "../lib/auth";
 import { useStore } from "../lib/store";
 import { buildInsights, weekSummary } from "../lib/insights";
@@ -70,7 +70,7 @@ export function Insights() {
               <span className="insight-emoji" aria-hidden="true">
                 {ins.emoji}
               </span>
-              <p dangerouslySetInnerHTML={{ __html: bold(ins.text) }} />
+              <p>{renderBold(ins.text)}</p>
             </div>
           ))}
         </section>
@@ -90,11 +90,12 @@ export function Insights() {
   );
 }
 
-function bold(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+// Render **bold** spans as React nodes so user-controlled habit names are
+// never interpolated into raw HTML.
+function renderBold(text: string): ReactNode[] {
+  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part,
+  );
 }
 
 function HabitStatRow({ habit, entries }: { habit: Habit; entries: Entry[] }) {
