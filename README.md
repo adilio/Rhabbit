@@ -28,7 +28,10 @@ npm run dev
 ```
 
 `npm run build` type-checks and produces `dist/`. Deploys run automatically
-from `main` via Netlify.
+from `main` via Netlify: a GitHub push webhook fires a Netlify build hook,
+and the buildbot clones over SSH with a read-only deploy key. If a deploy is
+ever needed by hand: `npm run build && netlify deploy --prod --dir dist
+--no-build` (local `.env` supplies the Firebase config).
 
 ## Access control
 
