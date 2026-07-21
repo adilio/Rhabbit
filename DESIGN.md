@@ -21,6 +21,10 @@ colors:
   paper-overlay: "#f7f2e8"
   border: "#efe7da"
   border-strong: "#e0d5c6"
+  border-control: "#8d867d"
+  chip-on-bg: "#e2ecf4"
+  chip-on-ink: "#314757"
+  chip-on-border: "#557994"
   ink: "#3d352f"
   ink-muted: "#635a4f"
   ink-faint: "#75685c"
@@ -30,6 +34,7 @@ colors:
   night-overlay: "#332c27"
   night-border: "#3b342e"
   night-border-strong: "#4b433c"
+  night-border-control: "#86786b"
   night-ink: "#f7f2eb"
   night-ink-muted: "#d2c5b6"
   night-ink-faint: "#aa9b8b"
@@ -142,7 +147,7 @@ components:
     height: "40px"
   chip-on:
     backgroundColor: "{colors.overcast-sky-soft}"
-    textColor: "#314757"
+    textColor: "{colors.chip-on-ink}"
     rounded: "{rounded.chip}"
     padding: "8px 15px"
     height: "40px"
@@ -234,7 +239,8 @@ with two muted accents doing all the semantic work.
 - **Paper** (`#fcfaf5`) / **Night** (`#1f1b18`): the page. Warm in both directions.
 - **Paper Raised** (`#ffffff`) / **Night Raised** (`#2a2420`): rows, cards, inputs, sheets — always tinted with sky wash before use, never left pure.
 - **Paper Overlay** (`#f7f2e8`) / **Night Overlay** (`#332c27`): the recessed layer — chips, steppers, calendar nav, toasts.
-- **Border** (`#efe7da` / `#3b342e`) and **Border Strong** (`#e0d5c6` / `#4b433c`): hairline separation at 1px. Border Strong carries the check button's resting ring and input strokes.
+- **Border** (`#efe7da` / `#3b342e`) and **Border Strong** (`#e0d5c6` / `#4b433c`): hairline separation at 1px between *surfaces* — sheets, toasts, dividers, the calendar grid. Deliberately soft; 1px separation is the whole point.
+- **Border Control** (`#8d867d` / `#86786b`): the boundary of anything interactive — check button, steppers, inputs, chips, day pickers, calendar nav, and the hop path's unlit stones. WCAG 1.4.11 wants 3:1 for a control's visible boundary and Border Strong reaches only 1.42:1 on a habit row, so the two roles need two values. Never use Border Strong to bound a control.
 - **Ink** (`#3d352f` / `#f7f2eb`), **Ink Muted** (`#635a4f` / `#d2c5b6`), **Ink Faint** (`#75685c` / `#aa9b8b`): a three-step text ramp, spaced so every step clears 4.5:1 against the *tinted* surfaces it actually lands on — the sidebar gradient and header wash, not just Paper. Ink Faint's worst case is 4.65:1 on the sidebar's sky-soft top stop. The two lower steps sit only 1.25:1 apart, which is the minimum that still reads as a step: darkening either one collapses the distinction, lightening either one drops below AA.
 
 ### Named Rules
@@ -283,7 +289,7 @@ Audit test: if a surface sitting *on* the page casts a shadow you can see from a
 - **Resting** (`box-shadow: 0 1px 2px rgb(41 37 34 / 0.04)`): cards, stat tiles, calendar grid. One step up from hairline.
 - **Card** (`--shadow-card`: `0 2px 8px rgb(41 37 34 / 0.08)` light, `0 8px 24px rgb(0 0 0 / 0.22)` dark): toasts and the Google sign-in button. The dark theme deliberately spreads further, because a warm-charcoal page swallows a tight shadow.
 - **Floating** (`box-shadow: 0 10px 26px rgb(36 31 27 / 0.12)`): the PWA install banner — the highest thing on screen short of a sheet.
-- **Ambient glow** (`--glow-a` / `--glow-b`): two 500–620px radial washes fixed to the top of the viewport behind everything, in sky and sage at 7–13% alpha. Atmosphere, not elevation. They are why the page never reads as flat cream.
+- **Ambient glow** (`--glow-a` / `--glow-b` / `--glow-c`): three 400–620px radial washes fixed to the top of the viewport behind everything, in sky, sage, and a faint blush at 6–13% alpha. Atmosphere, not elevation. They are why the page never reads as flat cream.
 - **Mark drop-shadows**: `drop-shadow(0 2px 2px …)` on the hopping rabbit, `drop-shadow(0 10px 20px …)` on the login mark. Only the rabbit gets these; icons do not.
 
 ### Named Rules
@@ -350,7 +356,7 @@ The single most important target in the product. A 48px circle with a 2px Border
 
 Rhabbit's progress element, and the reason there is no ring or percentage anywhere in the product. A dotted trail runs from a burrow through one stepping stone per habit due today to a carrot at the end. Completed stones light sky-blue with a check; the rabbit stands on the last one it reached and glides left-to-right on a 280ms `cubic-bezier(0.33, 0, 0.2, 1)` transition while a 260ms WAAPI keyframe bobs it 15px up — together the two read as a hop. When the day completes, every stone turns sage and the carrot pops to full saturation over 500ms.
 
-It is a legend as much as a meter: one stone per habit means the path shows *what* is left, not just how much. It carries a full sentence as `aria-label` and is `role="img"`. The bob is gated on `matchMedia('(prefers-reduced-motion: reduce)')` in addition to the global CSS reset.
+It is a legend as much as a meter: each stone *is* a specific habit and lights from that habit's own state, so the path shows *what* is left, not just how much. Past a 30px-per-landing floor it scrolls horizontally rather than shrinking — at 30 habits the old fixed-width path rendered 3px stones. It carries a full sentence as `aria-label` and is `role="img"`. The bob is gated on `matchMedia('(prefers-reduced-motion: reduce)')` in addition to the global CSS reset.
 
 ### Toasts
 
@@ -366,7 +372,8 @@ Bottom sheets on mobile (28px top corners, full width, 88dvh max, sliding up 40p
 
 - **Do** keep sage for completion and sky for orientation. A new state gets a pastel wash from the Blush / Lavender / Butter trio, never a fourth accent.
 - **Do** mix every raised surface with 11–35% sky wash before using it. Pure `#ffffff` and pure `#000000` do not appear in this system.
-- **Do** hold 48px as the minimum height for anything tappable, and 78px for habit rows. One-handed reach on a phone is the governing constraint.
+- **Do** hold 48px for anything on the logging path — the check button, primary and ghost buttons, inputs — and 78px for habit rows. One-handed reach on a phone is the governing constraint.
+- **Do** hold 44px as the floor for secondary controls: steppers, sheet close, calendar nav. Chips and day pickers are the one documented exception at 40px, because they are dense multi-select inside a form; that is still well above WCAG 2.2's 24px AA minimum.
 - **Do** give every state-changing action a toast with an Undo. Undo is the mechanism that makes the product forgiving; it is not optional polish.
 - **Do** set `font-variation-settings: "SOFT" 100` and `font-optical-sizing: auto` on every Fraunces element. Fraunces without the SOFT axis is a different, colder typeface.
 - **Do** use `tabular-nums lining-nums` on any figure that updates in place, so counts don't jitter.
@@ -384,6 +391,8 @@ Bottom sheets on mobile (28px top corners, full width, 88dvh max, sliding up 40p
 - **Don't** add `backdrop-filter` anywhere but the mobile tab bar. The blur budget is spent.
 - **Don't** use `background-clip: text` with a gradient, anywhere, for anything.
 - **Don't** add a second saturated warm element. The carrot's rarity is the entire reason reaching it registers.
+- **Don't** bound a control with Border Strong. It is a surface hairline (1.42:1 on a habit row) and fails WCAG 1.4.11's 3:1 for a control boundary. Controls take Border Control. A selected state must not *reduce* the boundary contrast below the unselected one.
+- **Don't** lead a habit surface with a streak counter. Current/best streak is a counter that resets to zero and means it — the primary anti-reference. Describe what happened in plain language instead: totals, rates, comebacks.
 - **Don't** lighten Ink Muted or Ink Faint. They are the floor for labels, placeholders, and hints, and they are already at the minimum spacing that reads as two distinct steps. Check any new value against the *tinted* surfaces (sidebar gradient, mobile header, calendar grid), not against Paper — Paper is the easy case.
 - **Don't** hardcode `#fff` as a foreground on an accent fill. Use `--ink-on-accent`, which flips per theme, and pair it with `--sky-deep` rather than `--sky` when the fill is blue — plain sky is a mid-tone and white on it is 3.87:1.
 - **Don't** put plain `--sage` on a tinted surface as *text*. It clears AA as a fill behind white, but only 4.20:1 as ink on the toast overlay. Sage-as-text takes `--sage-deep`.

@@ -20,9 +20,15 @@ const ALL_DONE_MESSAGES = [
   "Clean sweep. 🥕",
 ];
 
-const COMEBACK_MESSAGE = "You came back. That matters more than a perfect streak.";
+const COMEBACK_MESSAGES = [
+  "You came back. That matters more than a perfect streak.",
+  "Picked it back up. That's the hard part done.",
+  "Back at it. The gap doesn't undo the rest.",
+  "Returning counts. Welcome back.",
+];
 
 let lastIndex = -1;
+let lastComeback = -1;
 
 export function completionMessage(): string {
   // Never repeat the previous message back-to-back
@@ -37,5 +43,10 @@ export function allDoneMessage(): string {
 }
 
 export function comebackMessage(): string {
-  return COMEBACK_MESSAGE;
+  // Was a single constant: logging several lapsed habits in a row repeated the
+  // identical sentence each time, which turns reassurance into wallpaper.
+  let i = Math.floor(Math.random() * COMEBACK_MESSAGES.length);
+  if (i === lastComeback) i = (i + 1) % COMEBACK_MESSAGES.length;
+  lastComeback = i;
+  return COMEBACK_MESSAGES[i];
 }

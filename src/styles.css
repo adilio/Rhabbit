@@ -30,6 +30,11 @@
   --sky-deep: #557994;
   --sky-soft: #e2ecf4;
   --sky-wash: #f3f7fb;
+  /* Selected chip / day-picker. Was five literals duplicated across four rule
+     blocks with a manual dark override for each. */
+  --chip-on-bg: #e2ecf4;
+  --chip-on-ink: #314757;
+  --chip-on-border: #557994;
   --blush: #f8e6e6;
   --lavender: #eae5f4;
   --butter: #faf1c9;
@@ -51,6 +56,7 @@
   --shadow-card: 0 2px 8px rgb(41 37 34 / 0.08);
   --glow-a: rgb(110 147 174 / 0.11);
   --glow-b: rgb(175 198 166 / 0.13);
+  --glow-c: rgb(227 179 179 / 0.08);
   color-scheme: light;
 }
 
@@ -73,6 +79,9 @@
   --sky-deep: #88abc3;
   --sky-soft: #252d34;
   --sky-wash: #22303a;
+  --chip-on-bg: #314757;
+  --chip-on-ink: #ffffff;
+  --chip-on-border: #88abc3;
   --blush: #382b2b;
   --lavender: #302c3b;
   --butter: #3b3321;
@@ -89,6 +98,7 @@
   --shadow-card: 0 8px 24px rgb(0 0 0 / 0.22);
   --glow-a: rgb(136 171 195 / 0.08);
   --glow-b: rgb(142 174 132 / 0.07);
+  --glow-c: rgb(120 96 96 / 0.06);
   color-scheme: dark;
 }
 
@@ -137,7 +147,7 @@ body::before {
   background:
     radial-gradient(540px 300px at 12% 0%, var(--glow-a), transparent 72%),
     radial-gradient(620px 360px at 88% 0%, var(--glow-b), transparent 72%),
-    radial-gradient(400px 260px at 56% 8%, rgb(227 179 179 / 0.08), transparent 72%);
+    radial-gradient(400px 260px at 56% 8%, var(--glow-c), transparent 72%);
   pointer-events: none;
   z-index: 0;
 }
@@ -1062,17 +1072,11 @@ textarea::placeholder {
 }
 
 .seg button.on,
-.chip.on {
-  color: #314757;
-  background: #e2ecf4;
-  border-color: #a9c4d7;
-}
-
-:root[data-theme="dark"] .seg button.on,
-:root[data-theme="dark"] .chip.on {
-  background: #314757;
-  color: #fff;
-  border-color: #4a6a82;
+.chip.on,
+.day-picker button.on {
+  color: var(--chip-on-ink);
+  background: var(--chip-on-bg);
+  border-color: var(--chip-on-border);
 }
 
 .day-picker {
@@ -1089,18 +1093,6 @@ textarea::placeholder {
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 700;
-}
-
-.day-picker button.on {
-  color: #314757;
-  background: #e2ecf4;
-  border-color: #a9c4d7;
-}
-
-:root[data-theme="dark"] .day-picker button.on {
-  background: #314757;
-  color: #fff;
-  border-color: #4a6a82;
 }
 
 .form-error {
@@ -1848,8 +1840,8 @@ textarea::placeholder {
   }
 
   .day-picker button {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
   }
 }
 
