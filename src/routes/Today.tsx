@@ -62,6 +62,16 @@ export function Today() {
   const skippedCount = relevant.filter((h) => entryFor(h)?.status === "skipped").length;
   const countable = relevant.length - skippedCount;
 
+  // One stone per countable habit, carrying that habit's own state — the path
+  // is a legend for what's left, not a second rendering of the count.
+  const stones = relevant
+    .filter((h) => entryFor(h)?.status !== "skipped")
+    .map((h) => ({
+      id: h.id,
+      label: h.name,
+      done: entryFor(h)?.status === "complete",
+    }));
+
   /** Was the most recent strictly-scheduled day (last 14) an unlogged miss? */
   const isComeback = (h: Habit): boolean => {
     for (let i = 1; i <= 14; i++) {
@@ -152,7 +162,7 @@ export function Today() {
             </p>
           )}
         </div>
-        {countable > 0 && <HopPath done={doneCount} total={countable} />}
+        {stones.length > 0 && <HopPath stones={stones} />}
       </div>
 
       {relevant.length === 0 ? (

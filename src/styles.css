@@ -419,18 +419,36 @@ button {
   width: 100%;
 }
 
+/* Long paths scroll rather than shrinking to sub-pixel stones. The SVG carries
+   its own headroom above BASE, so overflow-y can be hidden without clipping
+   the rabbit. */
 .hoppath-frame {
-  position: relative;
   width: 100%;
-  padding: 6px 2px 2px;
+  padding: 2px 2px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+.hoppath-frame::-webkit-scrollbar {
+  height: 4px;
+}
+
+.hoppath-frame::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+.hoppath-inner {
+  position: relative;
+  margin-inline: auto;
 }
 
 .hoppath-track {
   display: block;
   width: 100%;
   height: auto;
-  margin: 0 auto;
-  overflow: visible;
 }
 
 .hoppath-trail {
