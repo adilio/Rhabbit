@@ -586,6 +586,7 @@ button {
 }
 
 .habit-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -599,7 +600,51 @@ button {
 }
 
 .habit-row:hover {
-  border-color: var(--border-strong);
+  border-color: var(--border-control);
+}
+
+/* Pressing anywhere on the tile reads as a press — the row was previously
+   inert everywhere except a 30px text line. */
+.habit-row:has(.habit-main:active) {
+  background: color-mix(in srgb, var(--sky-wash) 60%, var(--bg-raised));
+}
+
+/* Stretches the detail button across the whole tile without nesting buttons.
+   The check and stepper sit above it on z-index. */
+.habit-main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+.habit-main:focus-visible {
+  outline: none;
+}
+
+.habit-main:focus-visible::after {
+  outline: 3px solid var(--green);
+  outline-offset: -3px;
+}
+
+.habit-chevron {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--text-faint);
+  opacity: 0.6;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.habit-row:hover .habit-chevron {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.stepper,
+.check {
+  position: relative;
+  z-index: 1;
 }
 
 .habit-row.done {
@@ -761,8 +806,10 @@ button {
   pointer-events: none;
 }
 
+/* The toast floats over the "Add a habit" CTA. It must not eat taps meant for
+   what's underneath — only the Undo button is interactive. */
 .toast {
-  pointer-events: auto;
+  pointer-events: none;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -786,12 +833,24 @@ button {
 }
 
 .toast button {
+  pointer-events: auto;
+  position: relative;
   /* Undo is the forgiveness mechanism, not decoration — it takes the deeper
      sage so it clears AA on the overlay surface (plain --sage is 4.20:1). */
   color: var(--sage-deep);
   font-weight: 700;
   font-size: 0.88rem;
   padding: 2px 6px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Expand the tap target to ~48px without inflating the toast: the label stays
+   compact, the hit area doesn't. It was 46x25px. */
+.toast button::after {
+  content: "";
+  position: absolute;
+  inset: -12px -10px;
 }
 
 @keyframes toast-in {

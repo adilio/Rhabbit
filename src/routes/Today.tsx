@@ -5,11 +5,12 @@ import { useToast } from "../components/Toast";
 import { HopPath } from "../components/HopPath";
 import { RabbitMark } from "../components/RabbitMark";
 import { TimeGlyph } from "../components/TimeGlyph";
-import { IconCheck, IconPlus } from "../components/Icons";
+import { IconCheck, IconChevronRight, IconPlus } from "../components/Icons";
 import { HabitEditor } from "../components/HabitEditor";
 import { HabitSheet } from "../components/HabitSheet";
 import {
   addDays,
+  dateKey,
   formatLong,
   greeting,
   todayKey,
@@ -72,50 +73,73 @@ export function Today() {
       done: entryFor(h)?.status === "complete",
     }));
 
-  /** Was the most recent strictly-scheduled day (last 14) an unlogged miss? */
-  const isComeback = (h: Habit): boolean => {
-    for (let i = 1; i <= 14; i++) {
+  /** How many consecutive scheduled days were missed before today? Skips are
+      neutral, and days before the habit existed don't count as misses. */
+  const lapseLength = (h: Habit): number => {
+    const born = dateKey(new Date(h.createdAt));
+    let missed = 0;
+    for (let i = 1; i <= 60; i++) {
       const d = addDays(today, -i);
+      if (d < born) break;
       if (!isStrictlyScheduled(h, d)) continue;
       const e = entriesByKey.get(`${h.id}_${d}`);
       if (e?.status === "skipped") continue;
-      return e?.status !== "complete";
+      if (e?.status === "complete") break;
+      missed++;
     }
-    return false;
+    return missed;
   };
+
+  /** A comeback needs a real gap. Firing after one missed day made the line
+      wallpaper — by the time it was true, nobody read it. */
+  const isComeback = (h: Habit): boolean => lapseLength(h) >= 3;
 
   const complete = async (h: Habit, value?: number) => {
     const prev = entryFor(h);
     const comeback = isComeback(h);
-    await setEntry(h.id, today, {
-      status: "complete",
-      value: value ?? h.target ?? null,
-      completedAt: Date.now(),
-    });
+    try {
+      await setEntry(h.id, today, {
+        status: "complete",
+        value: value ?? h.target ?? null,
+        completedAt: Date.now(),
+      });
+    } catch {
+      show("Couldn't save that — check your connection.", { hop: false });
+      return;
+    }
     const lastOne = doneCount + 1 >= countable && countable > 0;
-    show(
-      comeback ? comebackMessage() : lastOne ? allDoneMessage() : completionMessage(),
-      {
-        undo: () => {
-          if (prev) void setEntry(h.id, today, prev);
-          else void clearEntry(h.id, today);
-        },
+    // Finishing the day wins over the comeback line: a returning user who
+    // clears their whole first day back should still get the celebration.
+    show(lastOne ? allDoneMessage() : comeback ? comebackMessage() : completionMessage(), {
+      undo: () => {
+        if (prev) void setEntry(h.id, today, prev);
+        else void clearEntry(h.id, today);
       },
-    );
+    });
   };
 
   const uncomplete = async (h: Habit) => {
-    const e = entryFor(h);
-    // Numeric habits step back below target instead of wiping progress
-    if ((h.type === "numeric" || h.type === "duration") && e?.value != null) {
-      await setEntry(h.id, today, {
-        status: null,
-        value: Math.max(0, Math.min(e.value, (h.target ?? 1) - 1)),
-        completedAt: null,
-      });
-    } else {
-      await clearEntry(h.id, today);
+    const prev = entryFor(h);
+    const numeric = h.type === "numeric" || h.type === "duration";
+    try {
+      // Clear outright. Stepping back to target-1 left a mis-tapped habit at
+      // 19/20 with no acknowledgement — a plausible-looking wrong value.
+      if (numeric && prev?.value != null) {
+        await setEntry(h.id, today, { status: null, value: 0, completedAt: null });
+      } else {
+        await clearEntry(h.id, today);
+      }
+    } catch {
+      show("Couldn't save that — check your connection.", { hop: false });
+      return;
     }
+    show(numeric ? "Cleared." : "Marked not done.", {
+      hop: false,
+      undo: () => {
+        if (prev) void setEntry(h.id, today, prev);
+        else void clearEntry(h.id, today);
+      },
+    });
   };
 
   const increment = async (h: Habit, delta: number) => {
@@ -134,8 +158,20 @@ export function Today() {
   };
 
   const skip = async (h: Habit) => {
-    await setEntry(h.id, today, { status: "skipped", completedAt: null });
-    show("Skipped — no guilt, it's not a miss.", { hop: false });
+    const prev = entryFor(h);
+    try {
+      await setEntry(h.id, today, { status: "skipped", completedAt: null });
+    } catch {
+      show("Couldn't save that — check your connection.", { hop: false });
+      return;
+    }
+    show("Skipped — no guilt, it's not a miss.", {
+      hop: false,
+      undo: () => {
+        if (prev) void setEntry(h.id, today, prev);
+        else void clearEntry(h.id, today);
+      },
+    });
   };
 
   if (loading) {
@@ -182,16 +218,16 @@ export function Today() {
             (h) => entryFor(h)?.status === "complete",
           ).length;
           return (
-            <section key={tod} className="group">
-              <p className="group-label">
+            <section key={tod} className="group" aria-labelledby={`group-${tod}`}>
+              <h2 className="group-label" id={`group-${tod}`}>
                 <span className="group-label-text">
                   <TimeGlyph time={tod} className="group-glyph" />
                   {TIME_OF_DAY_LABELS[tod]}
                 </span>
-                <span>
+                <span aria-label={`${groupDone} of ${group.length} done`}>
                   {groupDone}/{group.length}
                 </span>
-              </p>
+              </h2>
               <div className="habit-list">
                 {group.map((h) => (
                   <HabitRow
@@ -217,6 +253,7 @@ export function Today() {
               </div>
             </section>
           );
+
         })
       )}
 
@@ -288,24 +325,41 @@ function HabitRow({
 
   return (
     <div className={`habit-row${done ? " done" : ""}${skipped ? " skipped" : ""}`}>
-      <button className="habit-main" onClick={onOpen}>
-        <p className="habit-name">
+      {/* .habit-main stretches across the row via ::after, so the whole tile
+          opens detail — the check and stepper sit above it. Everything here
+          (note, skip, pause, edit, archive) used to hide behind a bare 30px
+          text line with no affordance. */}
+      <button
+        className="habit-main"
+        onClick={onOpen}
+        aria-label={`${habit.name} — open details, notes and skip`}
+      >
+        <p className="habit-name" title={habit.name}>
           {habit.emoji && <span aria-hidden="true">{habit.emoji} </span>}
           {habit.name}
         </p>
         {(sub.length > 0 || entry?.note) && (
           <p className="habit-sub">
             {sub.join(" · ")}
-            {entry?.note && <span className="habit-note-dot">✎</span>}
+            {entry?.note && (
+              <span className="habit-note-dot" title="Has a note">
+                ✎
+              </span>
+            )}
           </p>
         )}
       </button>
+      <IconChevronRight className="habit-chevron" />
       {numeric && !done && !skipped && (
-        <div className="stepper" aria-label={`Adjust ${habit.name}`}>
-          <button onClick={() => onIncrement(-1)} disabled={value <= 0} aria-label="Decrease">
+        <div className="stepper" role="group" aria-label={`Adjust ${habit.name}`}>
+          <button
+            onClick={() => onIncrement(-1)}
+            disabled={value <= 0}
+            aria-label={`Decrease ${habit.name}`}
+          >
             −
           </button>
-          <button onClick={() => onIncrement(1)} aria-label="Increase">
+          <button onClick={() => onIncrement(1)} aria-label={`Increase ${habit.name}`}>
             +
           </button>
         </div>
