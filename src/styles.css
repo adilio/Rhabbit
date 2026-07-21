@@ -11,20 +11,26 @@
   --border: #efe7da;
   --border-strong: #e0d5c6;
   --text: #3d352f;
-  --text-muted: #75695d;
-  --text-faint: #7f7164;
+  /* Ink ramp is spaced so every step clears 4.5:1 on the *tinted* surfaces it
+     lands on, not just on --bg. Darkening either one collapses the step above
+     it; lightening either one drops below AA on the sidebar and header washes. */
+  --text-muted: #635a4f;
+  --text-faint: #75685c;
   --sage: #5d7c54;
   --sage-deep: #4c6844;
   --sage-soft: #8eae84;
   --green: #607d57;
   --sky: #5e86a4;
+  /* --sky is a mid-tone: white on it is only 3.87:1. --sky-deep is the fill to
+     use whenever sky carries --ink-on-accent text. */
+  --sky-deep: #557994;
   --sky-soft: #e2ecf4;
   --sky-wash: #f3f7fb;
   --blush: #f8e6e6;
   --lavender: #eae5f4;
   --butter: #faf1c9;
-  --amber: #b8962d;
-  --red: #a26d6d;
+  --amber: #8a7022;
+  --red: #976565;
   --blue: #5e86a4;
   --ring-track: #efe7da;
   --carrot: #e08b3c;
@@ -58,6 +64,8 @@
   --sage-soft: #afc6a6;
   --green: #8eae84;
   --sky: #88abc3;
+  /* Dark mode pairs sky with dark ink, so the plain tone already clears AA. */
+  --sky-deep: #88abc3;
   --sky-soft: #252d34;
   --sky-wash: #22303a;
   --blush: #382b2b;
@@ -281,8 +289,8 @@ button {
   gap: 6px;
   padding: 7px 11px;
   border-radius: 10px;
-  background: var(--sky);
-  color: #fff;
+  background: var(--sky-deep);
+  color: var(--ink-on-accent);
   font-size: 0.8rem;
   font-weight: 750;
   white-space: nowrap;
@@ -748,7 +756,9 @@ button {
 }
 
 .toast button {
-  color: var(--sage);
+  /* Undo is the forgiveness mechanism, not decoration — it takes the deeper
+     sage so it clears AA on the overlay surface (plain --sage is 4.20:1). */
+  color: var(--sage-deep);
   font-weight: 700;
   font-size: 0.88rem;
   padding: 2px 6px;
