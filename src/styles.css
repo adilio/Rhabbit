@@ -1446,6 +1446,34 @@ textarea::placeholder {
   color: var(--text);
 }
 
+/* Plain-language recap in the habit sheet. Deliberately prose, not tiles —
+   counts describe, they don't grade. */
+.habit-recap {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--sky-wash) 55%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--sky) 12%, var(--border));
+  color: var(--text-muted);
+  font-size: 0.94rem;
+  text-wrap: pretty;
+}
+
+.habit-recap strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sheet-actions-minor {
+  margin-top: 10px;
+}
+
 /* ===== Settings ========================================================== */
 
 .settings-list {

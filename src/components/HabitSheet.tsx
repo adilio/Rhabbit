@@ -43,8 +43,12 @@ export function HabitSheet({
   };
 
   const pause = async (days: number) => {
+    const prevPaused = habit.pausedUntil;
     await saveHabit({ ...habit, pausedUntil: addDays(todayKey(), days) });
-    show(`Paused for ${days === 7 ? "a week" : `${days} days`}. Rest easy.`, { hop: false });
+    show(`Paused for ${days === 7 ? "a week" : `${days} days`}. Rest easy.`, {
+      hop: false,
+      undo: () => void saveHabit({ ...habit, pausedUntil: prevPaused }),
+    });
     onClose();
   };
 
@@ -66,26 +70,42 @@ export function HabitSheet({
           : ""}
       </p>
 
-      <div className="stat-grid" style={{ margin: "16px 0" }}>
-        <div className="stat">
-          <div className="stat-value">{stats.currentStreak}</div>
-          <div className="stat-label">Current streak</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{stats.bestStreak}</div>
-          <div className="stat-label">Best streak</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{stats.totalCompletions}</div>
-          <div className="stat-label">Total done</div>
-        </div>
-        {stats.comebacks > 0 && (
-          <div className="stat">
-            <div className="stat-value">{stats.comebacks}</div>
-            <div className="stat-label">Comebacks 💪</div>
-          </div>
-        )}
-      </div>
+      {/* Deliberately not a stat grid. Leading this sheet with "Current streak"
+          and "Best streak" was a counter that resets to zero and means it —
+          the exact pressure device PRODUCT.md names as the primary
+          anti-reference — rendered as a hero-metric tile grid DESIGN.md bans.
+          A returning user opens this sheet to write a note about their gap.
+          It should describe what happened, not grade it. */}
+      {stats.totalCompletions > 0 ? (
+        <p className="habit-recap">
+          Done <strong>{stats.totalCompletions}</strong>{" "}
+          {stats.totalCompletions === 1 ? "time" : "times"} so far
+          {stats.bestWeekday ? (
+            <>
+              , most often on <strong>{stats.bestWeekday}s</strong>
+            </>
+          ) : null}
+          .
+          {stats.rate30 != null && (
+            <>
+              {" "}
+              That's <strong>{Math.round(stats.rate30 * 100)}%</strong> of the days it
+              was due this past month.
+            </>
+          )}
+          {stats.comebacks > 0 && (
+            <>
+              {" "}
+              You've picked it back up <strong>{stats.comebacks}</strong>{" "}
+              {stats.comebacks === 1 ? "time" : "times"} after a gap.
+            </>
+          )}
+        </p>
+      ) : (
+        <p className="habit-recap">
+          Nothing logged yet — the first one counts as much as any.
+        </p>
+      )}
 
       <label className="field">
         <span className="field-label">Note for today (optional)</span>
@@ -97,12 +117,12 @@ export function HabitSheet({
         />
       </label>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {/* Six identical ghost buttons made "Skip today" — the product's flagship
+          forgiveness affordance — indistinguishable from "Archive". The two
+          decisions a user actually came here for lead; the rest step back. */}
+      <div className="sheet-actions">
         <button className="button button-primary" onClick={() => void saveNote()}>
           Save
-        </button>
-        <button className="button button-ghost" onClick={onEdit}>
-          Edit habit
         </button>
         {entry?.status !== "complete" && entry?.status !== "skipped" && (
           <button className="button button-ghost" onClick={onSkip}>
@@ -120,10 +140,16 @@ export function HabitSheet({
             Un-skip
           </button>
         )}
-        <button className="button button-ghost" onClick={() => void pause(7)}>
+      </div>
+
+      <div className="sheet-actions sheet-actions-minor">
+        <button className="button button-ghost button-small" onClick={onEdit}>
+          Edit habit
+        </button>
+        <button className="button button-ghost button-small" onClick={() => void pause(7)}>
           Pause a week
         </button>
-        <button className="button button-ghost" onClick={() => void archive()}>
+        <button className="button button-ghost button-small" onClick={() => void archive()}>
           Archive
         </button>
       </div>
@@ -136,6 +162,9 @@ export function HabitSheet({
               className="button button-danger button-small"
               onClick={() => {
                 void deleteHabit(habit.id);
+                // Delete is the one action with no undo — its history is gone.
+                // It should at least confirm that it happened.
+                show(`"${habit.name}" deleted.`, { hop: false });
                 onClose();
               }}
             >
