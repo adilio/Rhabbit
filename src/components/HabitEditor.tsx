@@ -54,10 +54,12 @@ export function HabitEditor({
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [applied, setApplied] = useState<string | null>(null);
 
   const numeric = type === "numeric" || type === "duration";
 
   const applyTemplate = (t: Partial<Habit> & { name: string }) => {
+    setApplied(t.name);
     setName(t.name);
     setEmoji(t.emoji ?? "");
     setType((t.type as HabitType) ?? "boolean");
@@ -108,7 +110,13 @@ export function HabitEditor({
             <span className="field-label">Quick start</span>
             <div className="seg">
               {TEMPLATES.map((t) => (
-                <button key={t.name} type="button" className="chip" onClick={() => applyTemplate(t)}>
+                <button
+                  key={t.name}
+                  type="button"
+                  className={`chip${applied === t.name ? " on" : ""}`}
+                  aria-pressed={applied === t.name}
+                  onClick={() => applyTemplate(t)}
+                >
                   {t.emoji} {t.name}
                 </button>
               ))}
@@ -122,10 +130,12 @@ export function HabitEditor({
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setApplied(null);
+                setName(e.target.value);
+              }}
               placeholder="e.g. Drink water"
               required
-              autoFocus={!habit}
             />
           </label>
           <label className="field" style={{ marginBottom: 0 }}>

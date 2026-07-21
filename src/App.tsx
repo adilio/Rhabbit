@@ -38,6 +38,9 @@ export function App() {
 
   return (
     <div className="app-frame">
+      <a className="skip-link" href="#main">
+        Skip to today's habits
+      </a>
       <aside className="sidebar" aria-label="Rhabbit navigation">
         <NavLink to="/" className="sidebar-brand">
           <RabbitMark className="sidebar-mark" />
@@ -57,7 +60,7 @@ export function App() {
           <div className="sidebar-signature">A <strong>4dl</strong> App</div>
         </div>
       </aside>
-      <main className="app-main">
+      <main className="app-main" id="main">
         <header className="mobile-header">
           <NavLink to="/" className="brand">
             <RabbitMark className="brand-mark" />

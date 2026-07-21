@@ -335,7 +335,12 @@ function HabitRow({
         aria-label={`${habit.name} — open details, notes and skip`}
       >
         <p className="habit-name" title={habit.name}>
-          {habit.emoji && <span aria-hidden="true">{habit.emoji} </span>}
+          {/* Always render the tile. When it only appeared for habits with an
+              emoji, a run of emoji-less habits collapsed into the identical
+              card grid DESIGN.md bans — the pastel rotation lives on this. */}
+          <span className={`habit-tile${habit.emoji ? "" : " is-initial"}`} aria-hidden="true">
+            {habit.emoji || habit.name.trim().charAt(0).toUpperCase() || "•"}
+          </span>
           {habit.name}
         </p>
         {(sub.length > 0 || entry?.note) && (
