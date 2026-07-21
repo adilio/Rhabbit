@@ -10,6 +10,10 @@
   --bg-overlay: #f7f2e8;
   --border: #efe7da;
   --border-strong: #e0d5c6;
+  /* --border-strong is a *surface* hairline and is far too light to bound a
+     control (1.42:1 on a habit row). WCAG 1.4.11 wants 3:1 for the visible
+     boundary of anything you interact with, so controls take this instead. */
+  --border-control: #8d867d;
   --text: #3d352f;
   /* Ink ramp is spaced so every step clears 4.5:1 on the *tinted* surfaces it
      lands on, not just on --bg. Darkening either one collapses the step above
@@ -56,6 +60,7 @@
   --bg-overlay: #332c27;
   --border: #3b342e;
   --border-strong: #4b433c;
+  --border-control: #86786b;
   --text: #f7f2eb;
   --text-muted: #d2c5b6;
   --text-faint: #aa9b8b;
@@ -429,21 +434,21 @@ button {
 }
 
 .hoppath-trail {
-  stroke: var(--border-strong);
+  stroke: var(--border-control);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 1 7;
 }
 
 .hoppath-burrow {
-  fill: color-mix(in srgb, var(--sky-wash) 60%, var(--border-strong));
-  stroke: var(--border-strong);
+  fill: color-mix(in srgb, var(--sky-wash) 60%, var(--border-control));
+  stroke: var(--border-control);
   stroke-width: 1.5;
 }
 
 .hoppath-stone ellipse {
   fill: var(--bg-raised);
-  stroke: var(--border-strong);
+  stroke: var(--border-control);
   stroke-width: 2;
   transition:
     fill 0.35s ease,
@@ -473,7 +478,7 @@ button {
 
 .hoppath-carrot-body {
   fill: color-mix(in srgb, var(--carrot) 45%, var(--bg-raised));
-  stroke: color-mix(in srgb, var(--carrot) 55%, var(--border-strong));
+  stroke: color-mix(in srgb, var(--carrot) 55%, var(--border-control));
   stroke-width: 1.5;
   transition:
     fill 0.35s ease,
@@ -481,7 +486,7 @@ button {
 }
 
 .hoppath-carrot-leaf {
-  stroke: color-mix(in srgb, var(--carrot-leaf) 60%, var(--border-strong));
+  stroke: color-mix(in srgb, var(--carrot-leaf) 60%, var(--border-control));
   stroke-width: 2;
   stroke-linecap: round;
 }
@@ -643,7 +648,7 @@ button {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2px solid var(--border-strong);
+  border: 2px solid var(--border-control);
   display: grid;
   place-items: center;
   color: transparent;
@@ -689,22 +694,29 @@ button {
 .stepper {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
+/* 44px minimum with a real gap between − and +. These sat at 34px, 2px apart,
+   14px from the 48px check: three consequential targets in a 132px strip. */
 .stepper button {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  border: 1px solid var(--border-strong);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-control);
   background: var(--bg-overlay);
   color: var(--text);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   display: grid;
   place-items: center;
   transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.stepper button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sky-wash) 60%, var(--bg-overlay));
+  border-color: color-mix(in srgb, var(--sky) 40%, var(--border-control));
 }
 
 .stepper button:active {
@@ -891,7 +903,7 @@ textarea {
   color: var(--text);
   min-height: 48px;
   background: var(--bg-raised);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: 12px;
   padding: 10px 14px;
   width: 100%;
@@ -930,7 +942,7 @@ textarea::placeholder {
   font-weight: 600;
   color: var(--text-muted);
   background: var(--bg-overlay);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: 999px;
   padding: 8px 15px;
   transition: all 0.15s ease;
@@ -959,7 +971,7 @@ textarea::placeholder {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   background: var(--bg-overlay);
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -1124,7 +1136,7 @@ textarea::placeholder {
   gap: 12px;
   min-height: 52px;
   background: var(--bg-raised);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: 14px;
   padding: 13px 26px;
   font-weight: 600;
@@ -1172,7 +1184,7 @@ textarea::placeholder {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   background: var(--bg-overlay);
   color: var(--text-muted);
   display: grid;
@@ -1499,7 +1511,7 @@ textarea::placeholder {
 }
 
 .drop-zone {
-  border: 2px dashed var(--border-strong);
+  border: 2px dashed var(--border-control);
   border-radius: var(--radius-lg);
   padding: 44px 20px;
   text-align: center;
