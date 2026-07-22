@@ -1406,8 +1406,8 @@ textarea::placeholder {
 
 @media (max-width: 820px) {
   .login {
-    align-items: flex-end;
-    padding: 20px;
+    align-items: center;
+    padding: clamp(120px, 22dvh, 200px) 20px 20px;
     background-image: url("/login-burrow-mobile.jpg");
     background-position: center top;
     background-size: cover;
