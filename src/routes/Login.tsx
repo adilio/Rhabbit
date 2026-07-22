@@ -25,6 +25,7 @@ export function Login({ denied }: { denied: boolean }) {
         <RabbitMark className="login-mark" />
         <h1>Rhabbit</h1>
         <p className="login-tagline">Take it one hop at a time.</p>
+        <p className="login-promise">A subscription-free habit tracker.</p>
         {denied && user ? (
           <>
             <p className="muted login-denied">
