@@ -63,7 +63,7 @@ export function HabitSheet({
 
   return (
     <Sheet title={`${habit.emoji ? habit.emoji + " " : ""}${habit.name}`} onClose={onClose}>
-      <p className="muted small" style={{ marginTop: -10 }}>
+      <p className="deck small">
         {scheduleSummary(habit)}
         {habit.target
           ? ` · ${habit.target}${habit.unit ? ` ${habit.unit}` : ""} a day`

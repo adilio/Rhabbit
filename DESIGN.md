@@ -85,11 +85,13 @@ rounded:
   lg: "20px"
   xl: "28px"
 spacing:
-  xs: "6px"
-  sm: "10px"
+  2xs: "4px"
+  xs: "8px"
+  sm: "12px"
   md: "16px"
   lg: "20px"
   xl: "28px"
+  2xl: "40px"
 components:
   button-primary:
     backgroundColor: "{colors.meadow-sage}"
@@ -207,7 +209,15 @@ serif, and the rabbit are the point of difference and must not be sanded off.
 - Generous, unmistakable targets in soft shapes — precise in behavior, pillowy in form
 - Softly layered depth: hairline lift at rest, real shadow only when floating
 - Character concentrated in signature moments (the hop path, the rabbit, empty states), never in labels or data
-- Mobile-first: bottom tab bar to 767px, sticky sidebar from 768px, two-column habit grid from 1180px
+- Mobile-first: bottom tab bar to 767px, sticky sidebar from 768px, habit lists split into intrinsic columns from 768px (`auto-fill`, 340px minimum), History becomes two panes at 1180px
+
+### The Spacing Contract
+
+Space between things comes from the `--space-*` scale (4 / 8 / 12 / 16 / 20 / 28 / 40). Space *inside* a control does not: button `11px 20px`, chip `8px 15px`, habit row `15px 16px`, and the 44/48px target floors are optical values derived from touch targets, and snapping them to the scale breaks the targets. Density-critical gaps — the calendar grid, the heatmap, the day picker — are computed against available width rather than chosen for rhythm, and are also literal.
+
+**The Grouping Rule.** Space between two surfaces must exceed the padding inside one of them. A stack of cards at 20px padding takes a 28px gap; at 16px the stack read as a single slab rather than as separate decisions.
+
+**Query the container, not the viewport, when width is non-monotonic.** A habit row is ~296px on a phone, ~680px in the single-column desktop band, and ~418px again once the list is two-column — so no media query can size its contents correctly. `.habit-row` is a query container for exactly this reason. Note that `container-type: inline-size` applies `contain: layout`, which makes the element a containing block for fixed-position descendants: never put a container on an ancestor of `.sheet-backdrop`.
 
 ## 2. Colors
 
@@ -294,7 +304,7 @@ Audit test: if a surface sitting *on* the page casts a shadow you can see from a
 
 ### Named Rules
 
-**The Ladder Rule.** Page → hairline row → resting card → card shadow → floating banner → sheet. Every new surface must claim a rung on that ladder. Two surfaces at the same rung must not be nested inside one another.
+**The Ladder Rule.** Page → hairline row → resting card → card shadow → floating banner → sheet. Every new surface must claim a rung on that ladder. Two surfaces at the same rung must not be nested inside one another. When a same-rung surface genuinely belongs inside a card, it surrenders its own surface rather than stacking one: `.card .stat` drops its background, border and padding and lets the grid gap separate the tiles, and `.card .table-wrap` bleeds to the card's edges keeping only its horizontal hairlines. A bordered box inside a bordered box gives two 1px lines 20px apart and two nested 20px radii, which reads as a rendering artifact, not as depth.
 
 **The Backdrop-Blur Budget Rule.** `backdrop-filter` is spent in exactly one place: the bottom tab bar (`blur(14px)` over 90% raised). It is what makes content scroll believably under the bar. Glass anywhere else is decoration and is prohibited.
 
@@ -350,7 +360,7 @@ The single most important target in the product. A 48px circle with a 2px Border
 
 - **Mobile (<768px):** fixed bottom tab bar, 72px tall plus safe-area inset, 90% raised background under a 14px backdrop blur, 1px top border. Four tabs at 72px minimum width, icon over 0.72rem label. Active takes a sky-soft pill and full Ink, with the icon in sky. A 64px header carries the wordmark and theme toggle.
 - **Desktop (≥768px):** the tab bar and header disappear; a 240px sticky sidebar takes over, running a three-stop gradient from sky-soft through sky-wash to a hint of blush. The same `.tab` component reflows to a horizontal row at 48px. The sidebar closes with the theme toggle and the `4dl` signature.
-- **Wide (≥1180px):** the shell opens to 980px and habit lists become two columns.
+- **Wide (≥1180px):** the shell opens to 980px, and History splits into two panes — the calendar picker at ~1.55fr beside its day detail at 1fr, top-aligned. Habit lists do *not* wait for this breakpoint; they split intrinsically from 768px via `repeat(auto-fill, minmax(340px, 1fr))`, so columns appear when a row can actually hold one rather than at a fixed width.
 
 ### The hop path — signature component
 
@@ -360,7 +370,9 @@ It is a legend as much as a meter: each stone *is* a specific habit and lights f
 
 ### Toasts
 
-Fully rounded, overlay background, Border Strong stroke, Card shadow, 9px/16px padding, floating 96px above the bottom edge. They enter on a 280ms overshoot and leave on a 250ms fade-down. Every state-changing action produces one, and almost every one carries an Undo in sage. The hop emoji bounces once alongside the message.
+Fully rounded, overlay background, Border Strong stroke, Card shadow, 9px/16px padding, floating 96px above the bottom edge on mobile and 24px on desktop, where there is no tab bar to clear. They enter on a 280ms overshoot and leave on a 250ms fade-down. Every state-changing action produces one, and almost every one carries an Undo in sage. The hop emoji bounces once alongside the message.
+
+The toast outranks the PWA banner: `z-index: 70` against the banner's 65, and `body:has(.pwa-banner)` lifts it clear of the banner's band entirely. The two used to occupy overlapping bands with the banner on top, so completing a habit while the offline banner was showing hid the toast and its Undo — and the offline banner is up precisely when someone is most likely to be logging. A persistent, re-offerable banner never obscures a timed, undoable one.
 
 ### Sheets
 
@@ -373,7 +385,7 @@ Bottom sheets on mobile (28px top corners, full width, 88dvh max, sliding up 40p
 - **Do** keep sage for completion and sky for orientation. A new state gets a pastel wash from the Blush / Lavender / Butter trio, never a fourth accent.
 - **Do** mix every raised surface with 11–35% sky wash before using it. Pure `#ffffff` and pure `#000000` do not appear in this system.
 - **Do** hold 48px for anything on the logging path — the check button, primary and ghost buttons, inputs — and 78px for habit rows. One-handed reach on a phone is the governing constraint.
-- **Do** hold 44px as the floor for secondary controls: steppers, sheet close, calendar nav. Chips and day pickers are the one documented exception at 40px, because they are dense multi-select inside a form; that is still well above WCAG 2.2's 24px AA minimum.
+- **Do** hold 44px as the floor for secondary controls: steppers, sheet close, calendar nav, and calendar day cells (which take `min-height: 44px` alongside `aspect-ratio: 1`, so they go slightly tall on the narrowest phones rather than dropping to the ~37px a square cell would compute to). Chips and day pickers are the one documented exception at 40px, because they are dense multi-select inside a form; that is still well above WCAG 2.2's 24px AA minimum. The day picker's seven circles flex between 36 and 40px rather than sitting fixed — seven fixed 40s plus gaps overflow a 320px sheet and silently scroll Sat/Sun out of view.
 - **Do** give every state-changing action a toast with an Undo. Undo is the mechanism that makes the product forgiving; it is not optional polish.
 - **Do** set `font-variation-settings: "SOFT" 100` and `font-optical-sizing: auto` on every Fraunces element. Fraunces without the SOFT axis is a different, colder typeface.
 - **Do** use `tabular-nums lining-nums` on any figure that updates in place, so counts don't jitter.

@@ -68,7 +68,7 @@ export function Settings() {
         <p className="muted small" style={{ marginTop: 0 }}>
           Your habit data is private. No ads. No selling your data.
         </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        <div className="action-row">
           <Link to="/import" className="button button-ghost button-small">
             Import a spreadsheet
           </Link>
@@ -133,7 +133,9 @@ export function Settings() {
         </div>
       )}
 
-      <div className="card">
+      {/* A wider gap before Account gives the page a terminus — five evenly
+          spaced cards gave "Sign out" the same weight as "Week starts on". */}
+      <div className="card card-terminal">
         <h2 className="card-title">Account</h2>
         <p className="muted small" style={{ marginTop: 0 }}>
           Signed in as {user?.email}

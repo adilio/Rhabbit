@@ -50,14 +50,18 @@ export function Insights() {
     <>
       <h1 className="page-title">Progress</h1>
 
+      {/* The sentence is the content; "Your week" is only its label. Rendering
+          the label in Fraunces 750 over a muted 1rem line inverted the two —
+          the same defect .today-summary already fixes on Today, where the
+          summary outranks the date and takes full ink at weight 650. */}
       <div className="card">
-        <h2 className="card-title">Your week</h2>
-        <p className="muted" style={{ margin: 0 }}>
+        <p className="card-lede">
           {week.done} of {week.scheduled || week.done} scheduled habits completed
           {week.scheduled > 0 && week.done >= week.scheduled
             ? " — a clean week so far 🥕"
             : ""}
         </p>
+        <p className="card-lede-label">This week</p>
       </div>
 
       {insights.length > 0 && (
@@ -107,9 +111,11 @@ function HabitStatRow({ habit, entries }: { habit: Habit; entries: Entry[] }) {
   const stats = useMemo(() => computeStats(habit, mine, today), [habit, mine, today]);
   const byDate = useMemo(() => new Map(mine.map((e) => [e.date, e])), [mine]);
 
-  // Last ~18 weeks, oldest column first, aligned to full weeks
+  // Last ~26 weeks, oldest column first, aligned to full weeks. Widened from
+  // 18 now that the map fills its row: on desktop the extra weeks use space
+  // that was empty, and on a phone the grid still scrolls horizontally.
   const cells = useMemo(() => {
-    const days = 18 * 7;
+    const days = 26 * 7;
     const start = addDays(today, -(days - 1));
     return Array.from({ length: days }, (_, i) => {
       const d = addDays(start, i);
@@ -131,8 +137,12 @@ function HabitStatRow({ habit, entries }: { habit: Habit; entries: Entry[] }) {
           {habit.emoji && <span aria-hidden="true">{habit.emoji} </span>}
           {habit.name}
         </p>
+        {/* No streak counter. A current-streak tally on every row is a counter
+            that resets to zero and means it — the pressure device PRODUCT.md
+            exists to argue against, and the same thing already removed from
+            the habit sheet. The completion rate beside it describes the same
+            history without punishing a gap. */}
         <span className="faint small">
-          {stats.currentStreak > 0 && `🔥 ${stats.currentStreak} · `}
           {stats.rate30 !== null ? `${Math.round(stats.rate30 * 100)}% this month` : "New"}
         </span>
       </div>

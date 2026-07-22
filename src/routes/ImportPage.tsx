@@ -144,7 +144,7 @@ export function ImportPage() {
   return (
     <>
       <h1 className="page-title">Import a spreadsheet</h1>
-      <p className="muted small" style={{ marginTop: -10, marginBottom: 18 }}>
+      <p className="deck small">
         Bring your habit history from Excel or CSV. Everything is previewed
         before anything is saved, and the whole import can be undone.
       </p>
@@ -319,7 +319,7 @@ export function ImportPage() {
                 )}
               </div>
 
-              <div style={{ display: "flex", gap: 10, margin: "16px 0" }}>
+              <div className="action-row" style={{ margin: "16px 0" }}>
                 <button
                   className="button button-primary"
                   disabled={committing || plan.fresh.filter((e) => e.complete).length === 0}

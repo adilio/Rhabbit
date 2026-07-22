@@ -25,12 +25,18 @@ export function buildInsights(habits: Habit[], entries: Entry[]): Insight[] {
     stats: computeStats(h, byHabit.get(h.id) ?? [], today),
   }));
 
-  // Personal-best streak in progress
+  // Personal-best run in progress. Fires only at currentStreak === bestStreak,
+  // so it can only ever appear when you're at your best — it never counts down
+  // and never renders a zero. That's a description, not a pressure device, and
+  // it's why this one stays. The flame does not: 🔥 is the iconography of the
+  // streak-guilt apps PRODUCT.md names as the primary anti-reference, and it
+  // was rendering two rows above our own "returning matters more than a
+  // perfect streak" line — the screen was arguing with itself.
   for (const { habit, stats } of statsFor) {
     if (stats.currentStreak >= 3 && stats.currentStreak === stats.bestStreak) {
       out.push({
-        emoji: "🔥",
-        text: `**${habit.name}** is on a ${stats.currentStreak}-day streak — your best yet.`,
+        emoji: "🌱",
+        text: `**${habit.name}** is on a ${stats.currentStreak}-day run — the longest it's gone.`,
       });
       break;
     }

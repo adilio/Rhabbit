@@ -62,6 +62,12 @@ export function History() {
 
   return (
     <>
+      {/* Picker and detail become side-by-side panes at ≥1180 — see
+          .history-panes. Stacked below that, which is correct on a phone.
+          The month header lives inside the picker pane so its nav stays with
+          the calendar it drives rather than drifting to the shell's edge. */}
+      <div className="history-panes">
+      <div className="history-cal">
       <div className="cal-head">
         <h1 className="cal-title">{monthTitle(year, month)}</h1>
         <div className="cal-nav">
@@ -104,6 +110,7 @@ export function History() {
           );
         })}
       </div>
+      </div>
 
       <section className="group">
         <p className="group-label">
@@ -115,9 +122,7 @@ export function History() {
           )}
         </p>
         {sel.habits.length === 0 ? (
-          <p className="muted small" style={{ padding: "0 4px" }}>
-            Nothing scheduled this day.
-          </p>
+          <p className="muted small">Nothing scheduled this day.</p>
         ) : (
           <div className="habit-list">
             {sel.habits.map((h) => (
@@ -144,6 +149,7 @@ export function History() {
           </div>
         )}
       </section>
+      </div>
     </>
   );
 }

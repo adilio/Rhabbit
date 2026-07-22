@@ -53,6 +53,19 @@
   --font-display: "Fraunces Variable", var(--font-body);
   --radius: 20px;
   --radius-lg: 28px;
+  /* Layout rhythm scale. Governs the space *between* things — stack gaps,
+     section margins, gutters. Control sizing (button 11/20, chip 8/15, the
+     44/48px target floors) stays literal: those are optical values derived
+     from touch targets, not rhythm, and snapping them breaks the targets.
+     Density-critical gaps (.cal-grid, .heatmap, .day-picker) are also literal
+     — they're computed against available width, not chosen for rhythm. */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 28px;
+  --space-2xl: 40px;
   --shadow-card: 0 2px 8px rgb(41 37 34 / 0.08);
   --glow-a: rgb(110 147 174 / 0.11);
   --glow-b: rgb(175 198 166 / 0.13);
@@ -260,12 +273,6 @@ button {
   letter-spacing: -0.02em;
 }
 
-.mobile-tagline {
-  color: var(--text-faint);
-  font-size: 0.72rem;
-  font-weight: 650;
-}
-
 .sidebar {
   display: none;
 }
@@ -403,8 +410,15 @@ button {
   box-shadow: 0 1px 2px rgb(41 37 34 / 0.04);
 }
 
+/* Between-card space must exceed inside-card padding (20px), or a stack of
+   cards reads as one slab instead of N separate decisions. Settings is five
+   of these; at 16px they merged. */
 .card + .card {
-  margin-top: 16px;
+  margin-top: var(--space-xl);
+}
+
+.card + .card-terminal {
+  margin-top: var(--space-2xl);
 }
 
 .card-title {
@@ -412,7 +426,22 @@ button {
   font-size: 1.08rem;
   font-weight: 750;
   letter-spacing: -0.01em;
-  margin: 0 0 10px;
+  margin: 0 0 var(--space-sm);
+}
+
+/* Heading + deck. Replaces the inline `marginTop: -10` corrections that were
+   cancelling a heading's own margin — a negative margin undoing an adjacent
+   positive one is a missing pattern, and the 8px it netted was a value nobody
+   chose. Here the heading yields instead of the deck pulling back up. */
+.card-title:has(+ .deck),
+.page-title:has(+ .deck),
+.sheet-head:has(+ .deck) {
+  margin-bottom: var(--space-xs);
+}
+
+.deck {
+  margin: 0 0 var(--space-md);
+  color: var(--text-muted);
 }
 
 /* ===== Today header ====================================================== */
@@ -422,7 +451,7 @@ button {
   flex-direction: column;
   align-items: stretch;
   gap: 14px;
-  padding: 28px 2px 20px;
+  padding: var(--space-xl) 0 var(--space-lg);
 }
 
 .today-greeting {
@@ -588,9 +617,13 @@ button {
 /* ===== Habit groups & rows =============================================== */
 
 .group {
-  margin: 22px 0 30px;
+  margin: var(--space-lg) 0 var(--space-xl);
 }
 
+/* The right-hand tally counts the check buttons below it, so it aligns to
+   their right edge (.habit-row's own 16px padding), not to the shell. At 4px
+   it sat 12px inboard of the column it summarises — a near-miss that reads as
+   sloppiness rather than as an offset. */
 .group-label {
   display: flex;
   align-items: baseline;
@@ -599,7 +632,7 @@ button {
   font-weight: 700;
   letter-spacing: 0.01em;
   color: color-mix(in srgb, var(--sky) 54%, var(--text-muted));
-  margin: 0 4px 11px;
+  margin: 0 var(--space-md) var(--space-sm);
 }
 
 .group-label-text {
@@ -617,14 +650,20 @@ button {
 .habit-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
+/* Each row is its own query container — see the @container block below for
+   why the row and not the list. Safe to contain: the only absolutely
+   positioned descendant is .habit-main::after, which already resolves against
+   this element's `position: relative`. */
 .habit-row {
   position: relative;
+  container-type: inline-size;
+  container-name: habitrow;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-sm);
   min-height: 78px;
   background: color-mix(in srgb, var(--sky-wash) 22%, var(--bg-raised));
   border: 1px solid color-mix(in srgb, var(--sky) 12%, var(--border));
@@ -730,7 +769,12 @@ button {
   font-variation-settings: "SOFT" 100;
 }
 
-.habit-row:nth-child(2n) .habit-tile {
+/* Period 3, not 2. The rotation exists so a run of rows never reads as a
+   uniform grid — but on a 2n cycle every even child lands in the right column
+   once the list goes two-column, so the right column went almost uniformly
+   lavender and the left almost uniformly sky. A period coprime with the
+   column count keeps the wash scattered in both layouts. */
+.habit-row:nth-child(3n + 2) .habit-tile {
   background: var(--lavender);
 }
 
@@ -837,11 +881,57 @@ button {
   cursor: default;
 }
 
+/* Compact row. A numeric habit stacks four fixed children (chevron 18, stepper
+   96, check 48) plus gaps against a flexible name; in a ~296px row that left
+   the name 54px and "Drink water" rendered as "Dri…". The chevron is the one
+   expendable child — Today.tsx makes the whole tile the button via
+   .habit-main::after, so the affordance survives without it — and it's dropped
+   only where the stepper actually competes, so boolean rows keep their cue.
+   The query names .habit-row (not .habit-list) because a container cannot
+   query itself, and because the row's width is what actually varies: it is
+   ~296px at 360px viewport, ~680px in the single-column desktop band, then
+   ~418px again once the list goes two-column. Only the row knows. */
+/* 420px is the row's *content* box — inline-size queries measure the content
+   box, not the border box, so this is ~452px of row. Measured: at 386px
+   content a numeric row gives the name 150px and "Read for 20 minutes"
+   ellipsises; dropping the chevron returns 180px and it fits. On a 390px
+   phone the same row goes from 60px of name to 134px. */
+@container habitrow (max-width: 420px) {
+  .habit-row:has(.stepper) .habit-chevron {
+    display: none;
+  }
+
+  /* Wrap rather than ellipsise. Even with the chevron gone, a stepper row on
+     a 390px phone leaves ~118px of name — fine for "Drink water", not for
+     "Read for 20 minutes". The stepper's three 44px targets are a documented
+     floor and can't give the space back, so the name takes a second line
+     instead of hiding characters. The row's 78px minimum absorbs it. */
+  .habit-row:has(.stepper) .habit-name {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    /* Flex, so the wrapped text forms its own column instead of flowing back
+       under the emoji tile — the second line was starting 42px to the LEFT of
+       the first. The bare text node becomes an anonymous flex item. */
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .habit-row:has(.stepper) .habit-tile {
+    flex: none;
+    margin-right: 0;
+  }
+}
+
 /* ===== Completion toast ================================================== */
 
+/* Sits above .pwa-banner (65). The banner is persistent and re-offerable; a
+   toast is on a timer and carries Undo, which DESIGN.md calls the mechanism
+   that makes the product forgiving. If the two ever overlap, the toast is the
+   one that must be readable. */
 .toast-zone {
   position: fixed;
-  z-index: 60;
+  z-index: 70;
   bottom: calc(96px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
@@ -850,6 +940,16 @@ button {
   align-items: center;
   gap: 8px;
   pointer-events: none;
+}
+
+/* …and stacks above it rather than on top of it. The banner occupies 88–146px
+   and the toast 96–136px, so the toast sat entirely inside the banner's band
+   and behind it: completing a habit while the offline or install banner was
+   up hid the toast and its Undo completely. The banner shows precisely when
+   someone is most likely to be logging (offline), so this was the common
+   case, not the edge one. */
+body:has(.pwa-banner) .toast-zone {
+  bottom: calc(158px + env(safe-area-inset-bottom));
 }
 
 /* The toast floats over the "Add a habit" CTA. It must not eat taps meant for
@@ -1005,7 +1105,15 @@ button {
 
 label.field {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
+}
+
+/* A field is as wide as its content needs, not as wide as its container. On a
+   desktop Settings card the display-name input was stretching to ~900px — a
+   text box the width of the page for a first name. Sheets are already capped
+   at 680px, so this only bites in cards. */
+.card label.field {
+  max-width: 560px;
 }
 
 .field-label {
@@ -1084,9 +1192,17 @@ textarea::placeholder {
   gap: 6px;
 }
 
+/* Compress evenly instead of overflowing. Seven fixed 40px circles plus six
+   6px gaps need 316px, against 280px of sheet interior at a 320px viewport —
+   so Sat and Sun scrolled silently off the edge of the habit editor, with no
+   cue that they were there. Flexible basis with a 36px floor keeps all seven
+   visible down to 292px and lets them grow back to 40px when there's room. */
 .day-picker button {
-  width: 40px;
-  height: 40px;
+  flex: 1 1 0;
+  min-width: 36px;
+  max-width: 40px;
+  aspect-ratio: 1;
+  height: auto;
   border-radius: 50%;
   border: 1px solid var(--border-control);
   background: var(--bg-overlay);
@@ -1150,7 +1266,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: var(--space-md);
 }
 
 .sheet-head h2 {
@@ -1281,7 +1397,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 28px 0 14px;
+  margin: var(--space-xl) 0 var(--space-md);
 }
 
 .cal-title {
@@ -1291,14 +1407,20 @@ textarea::placeholder {
   margin: 0;
 }
 
+/* flex: none — these are flex items beside a heading, so `width` is only a
+   basis and a long month name would squeeze them below their target size. */
 .cal-nav {
   display: flex;
+  flex: none;
   gap: 6px;
 }
 
+/* 44px, matching the documented floor for secondary controls. These were 36px
+   — DESIGN.md names calendar nav in the same breath as the stepper and sheet
+   close, both of which already hold 44. */
 .cal-nav button {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
   border: 1px solid var(--border-control);
   background: var(--bg-overlay);
@@ -1326,8 +1448,14 @@ textarea::placeholder {
   padding: 4px 0;
 }
 
+/* aspect-ratio sets the shape, min-height sets the floor. A square cell in a
+   7-column grid computes to ~37.7px at 360px and 32px at 320px — below the
+   44px floor, and below even the 40px chip exception, on the primary control
+   of the History screen. The floor wins and cells go slightly tall on the
+   narrowest phones. */
 .cal-day {
   aspect-ratio: 1;
+  min-height: 44px;
   border-radius: 12px;
   border: 1px solid transparent;
   background: transparent;
@@ -1383,18 +1511,24 @@ textarea::placeholder {
 
 /* Heatmap (per-habit) — mixes track through green so both themes keep the
    light-to-dark intensity ramp */
+/* Cells grow into the space available instead of leaving it empty. At a fixed
+   11px the 18-week map was always 252px, so in a 748px row on desktop — the
+   one place someone wants to see more history — two thirds of the row was
+   blank. The 11px minimum keeps it scrollable on a phone. */
 .heatmap {
   display: grid;
   grid-auto-flow: column;
-  grid-template-rows: repeat(7, 11px);
+  grid-auto-columns: minmax(11px, 15px);
+  grid-template-rows: repeat(7, minmax(11px, 15px));
+  justify-content: start;
   gap: 3px;
   overflow-x: auto;
   padding-bottom: 6px;
 }
 
 .heat-cell {
-  width: 11px;
-  height: 11px;
+  aspect-ratio: 1;
+  min-width: 11px;
   border-radius: 3px;
   background: var(--ring-track);
 }
@@ -1428,6 +1562,17 @@ textarea::placeholder {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 16px;
+}
+
+/* The Ladder Rule: cards and stat tiles share the Resting rung, and two
+   surfaces on the same rung must not nest. Inside a card the tile drops its
+   surface and lets the grid gap do the separating — otherwise you get two 1px
+   hairlines 20px apart and two nested 20px radii, which reads as a rendering
+   artifact rather than as depth. */
+.card .stat {
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .stat-value {
@@ -1466,8 +1611,34 @@ textarea::placeholder {
   background: color-mix(in srgb, var(--butter) 42%, var(--bg-raised));
 }
 
+/* Datum first, label under it — the reverse of a card-title over muted prose.
+   Deliberately a sentence at body size rather than a big number over a small
+   label: DESIGN.md bans the hero-metric template, and PRODUCT.md asks Progress
+   to speak in plain language about what happened rather than grade it. */
+.card-lede {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.card-lede-label {
+  margin: var(--space-2xs) 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-faint);
+}
+
 .insight + .insight {
-  margin-top: 10px;
+  margin-top: var(--space-sm);
+}
+
+/* Hold a measure. These are single sentences (~60 characters); across an
+   852px shell they render as a 16px band of colour with text in the left
+   third, at roughly 110ch against DESIGN.md's 65–75ch rule for prose. */
+.insight p {
+  max-width: 68ch;
 }
 
 .insight-emoji {
@@ -1503,14 +1674,17 @@ textarea::placeholder {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-.sheet-actions {
+/* Also the generic action row — Settings and ImportPage each hand-rolled this
+   same flex/wrap/gap inline, drifting to gap 8 vs 10. One construct, one rule. */
+.sheet-actions,
+.action-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-xs);
 }
 
 .sheet-actions-minor {
-  margin-top: 10px;
+  margin-top: var(--space-sm);
 }
 
 /* ===== Settings ========================================================== */
@@ -1520,12 +1694,16 @@ textarea::placeholder {
   flex-direction: column;
 }
 
+/* Capped so the control stays associated with its label. space-between across
+   an 852px shell put a "Restore" button ~800px from the habit name it
+   restores; correct on a phone, a broken pairing on a desktop. */
 .settings-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 14px 2px;
+  gap: var(--space-md);
+  max-width: 560px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1551,7 +1729,7 @@ textarea::placeholder {
   font-size: 1.75rem;
   font-weight: 750;
   letter-spacing: -0.02em;
-  margin: 28px 0 18px;
+  margin: var(--space-xl) 0 var(--space-md);
 }
 
 .empty {
@@ -1626,6 +1804,17 @@ textarea::placeholder {
   background: var(--bg-raised);
 }
 
+/* Same rung, same rule as .card .stat. Inside a card the table bleeds to the
+   card's edges and keeps only its horizontal hairlines, so the Preview card
+   holds one surface instead of three. */
+.card .table-wrap {
+  border-inline: none;
+  border-radius: 0;
+  background: none;
+  margin-inline: calc(var(--space-lg) * -1);
+  width: calc(100% + var(--space-lg) * 2);
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -1683,7 +1872,7 @@ textarea::placeholder {
     top: 0;
     height: 100dvh;
     flex-direction: column;
-    padding: 28px 18px 22px;
+    padding: var(--space-xl) var(--space-md) var(--space-lg);
     background: linear-gradient(
       180deg,
       color-mix(in srgb, var(--sky-soft) 76%, var(--bg)),
@@ -1786,6 +1975,26 @@ textarea::placeholder {
     padding: 42px 40px 64px;
   }
 
+  /* Intrinsic columns rather than a hard 1180px switch. The old breakpoint
+     left a 412px band (768–1179) where a single 780px row put the check
+     button ~700px from the name it belongs to; auto-fill splits as soon as
+     two 340px rows actually fit. Also retires a dead `:only-child { grid-
+     column: span 1 }` rule, which set grid-column to its initial value and so
+     never did anything — a lone habit still rendered half-width. */
+  .habit-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+
+  /* The toast cleared a 72px tab bar that no longer exists up here. */
+  .toast-zone {
+    bottom: 24px;
+  }
+
+  body:has(.pwa-banner) .toast-zone {
+    bottom: 96px;
+  }
+
   .today-hero {
     padding-top: 0;
   }
@@ -1807,25 +2016,29 @@ textarea::placeholder {
     padding-right: 64px;
   }
 
-  .habit-list {
+  /* History is the one screen with a natural two-pane shape — a picker and
+     its detail. It used to stack them, so on the widest viewport you chose a
+     day at the top and scrolled to see what you chose, with 132px of void
+     beside the calendar. */
+  /* Proportional, not a fixed 720px picker — at an 852px shell a hard 720
+     left the detail pane 104px and its rows overflowed the viewport. ~1.55:1
+     gives the calendar ~500px (≈64px cells) and the detail ~324px, which is
+     the width a habit row actually wants. */
+  .history-panes {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+    gap: var(--space-xl);
+    align-items: start;
   }
 
-  .group .habit-list > .habit-row:only-child {
-    grid-column: span 1;
-  }
-
-  .cal-grid {
-    max-width: 720px;
+  /* The detail pane starts level with the calendar, not a section-gap below
+     it — the stacked rhythm is wrong once they're side by side. */
+  .history-panes > .group {
+    margin-top: 0;
   }
 }
 
 @media (max-width: 430px) {
-  .mobile-tagline {
-    display: none;
-  }
-
   .tab {
     min-width: 68px;
     padding-inline: 7px;
@@ -1836,12 +2049,7 @@ textarea::placeholder {
   }
 
   .day-picker {
-    justify-content: space-between;
-  }
-
-  .day-picker button {
-    width: 40px;
-    height: 40px;
+    gap: var(--space-2xs);
   }
 }
 
