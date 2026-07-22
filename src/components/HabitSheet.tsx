@@ -86,11 +86,18 @@ export function HabitSheet({
             </>
           ) : null}
           .
-          {stats.rate30 != null && (
+          {stats.rate30 != null && stats.scheduled30 >= 7 && (
             <>
               {" "}
-              That's <strong>{Math.round(stats.rate30 * 100)}%</strong> of the days it
-              was due this past month.
+              Across its last {stats.scheduled30} due days, you logged{" "}
+              <strong>{Math.round(stats.rate30 * 100)}%</strong>.
+            </>
+          )}
+          {stats.scheduled30 > 0 && stats.scheduled30 < 7 && (
+            <>
+              {" "}
+              It's still early — <strong>{stats.completed30} of {stats.scheduled30}</strong>{" "}
+              due {stats.scheduled30 === 1 ? "day" : "days"} logged so far.
             </>
           )}
           {stats.comebacks > 0 && (

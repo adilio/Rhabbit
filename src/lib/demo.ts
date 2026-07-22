@@ -34,7 +34,7 @@ function habit(
   return {
     id, name, emoji, type, target, unit, timeOfDay, position,
     schedule: { kind: "daily", weekdays: [], timesPerWeek: 7 },
-    pausedUntil: null, archivedAt: null, createdAt: Date.now() - 5_000_000,
+    pausedUntil: null, archivedAt: null, createdAt: Date.now() - 80 * 86_400_000,
   };
 }
 

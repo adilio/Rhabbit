@@ -104,7 +104,7 @@ export function HabitEditor({
 
   return (
     <Sheet title={habit ? "Edit habit" : "New habit"} onClose={onClose}>
-      <form onSubmit={submit}>
+      <form className="habit-editor-form" onSubmit={submit}>
         {!habit && (
           <div className="field">
             <span className="field-label">Quick start</span>
@@ -269,9 +269,11 @@ export function HabitEditor({
         </div>
 
         {error && <p className="form-error">{error}</p>}
-        <button className="button button-primary button-block" disabled={saving}>
-          {saving ? "Saving…" : habit ? "Save changes" : "Add habit"}
-        </button>
+        <div className="habit-editor-submit">
+          <button className="button button-primary button-block" disabled={saving}>
+            {saving ? "Saving…" : habit ? "Save changes" : "Add habit"}
+          </button>
+        </div>
       </form>
     </Sheet>
   );

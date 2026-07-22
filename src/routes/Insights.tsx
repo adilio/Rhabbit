@@ -143,7 +143,13 @@ function HabitStatRow({ habit, entries }: { habit: Habit; entries: Entry[] }) {
             the habit sheet. The completion rate beside it describes the same
             history without punishing a gap. */}
         <span className="faint small">
-          {stats.rate30 !== null ? `${Math.round(stats.rate30 * 100)}% this month` : "New"}
+          {habit.schedule.kind === "timesPerWeek"
+            ? `${stats.completed30} ${stats.completed30 === 1 ? "completion" : "completions"} in 30 days`
+            : stats.scheduled30 === 0
+            ? "New"
+            : stats.scheduled30 < 7
+              ? `${stats.completed30} of ${stats.scheduled30} due ${stats.scheduled30 === 1 ? "day" : "days"} so far`
+              : `${Math.round((stats.rate30 ?? 0) * 100)}% over ${stats.scheduled30} due days`}
         </span>
       </div>
       <div className="heatmap" aria-label={`${habit.name} history heatmap`}>

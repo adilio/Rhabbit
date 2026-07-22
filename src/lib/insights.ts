@@ -57,7 +57,7 @@ export function buildInsights(habits: Habit[], entries: Entry[]): Insight[] {
 
   // Most consistent habit (30d)
   const consistent = statsFor
-    .filter((s) => s.stats.rate30 !== null && s.stats.totalCompletions >= 5)
+    .filter((s) => s.stats.rate30 !== null && s.stats.scheduled30 >= 14)
     .sort((a, b) => (b.stats.rate30 ?? 0) - (a.stats.rate30 ?? 0))[0];
   if (consistent && (consistent.stats.rate30 ?? 0) >= 0.7) {
     out.push({
@@ -78,7 +78,8 @@ export function buildInsights(habits: Habit[], entries: Entry[]): Insight[] {
   }
 
   // Trending up: last 7 days vs the 30-day baseline
-  for (const { habit } of statsFor) {
+  for (const { habit, stats } of statsFor) {
+    if (stats.scheduled30 < 14) continue;
     const byDate = new Map((byHabit.get(habit.id) ?? []).map((e) => [e.date, e]));
     const r7 = completionRate(habit, byDate, today, 7);
     const r30 = completionRate(habit, byDate, today, 30);
@@ -93,7 +94,7 @@ export function buildInsights(habits: Habit[], entries: Entry[]): Insight[] {
 
   // A habit that may be scheduled too often
   const struggling = statsFor
-    .filter((s) => s.stats.rate30 !== null && s.stats.totalCompletions >= 3)
+    .filter((s) => s.stats.rate30 !== null && s.stats.scheduled30 >= 14)
     .sort((a, b) => (a.stats.rate30 ?? 1) - (b.stats.rate30 ?? 1))[0];
   if (struggling && (struggling.stats.rate30 ?? 1) < 0.35) {
     out.push({
