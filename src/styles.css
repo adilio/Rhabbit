@@ -1347,11 +1347,17 @@ textarea::placeholder {
   width: min(100%, 500px);
   margin-right: min(46vw, 610px);
   padding: clamp(32px, 5vw, 52px);
-  border: 1px solid rgb(224 213 198 / 0.9);
+  border: 1px solid rgb(255 255 255 / 0.68);
   border-radius: var(--radius-lg);
-  background: rgb(252 250 245 / 0.88);
-  box-shadow: 0 24px 80px rgb(61 53 47 / 0.14);
-  backdrop-filter: blur(16px) saturate(0.9);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.38), transparent 52%),
+    rgb(252 250 245 / 0.64);
+  box-shadow:
+    0 24px 80px rgb(61 53 47 / 0.16),
+    inset 0 1px 0 rgb(255 255 255 / 0.78),
+    inset 0 -1px 0 rgb(255 255 255 / 0.2);
+  -webkit-backdrop-filter: blur(28px) saturate(1.28);
+  backdrop-filter: blur(28px) saturate(1.28);
   text-align: center;
 }
 
@@ -1365,9 +1371,14 @@ textarea::placeholder {
 }
 
 :root[data-theme="dark"] .login-card {
-  border-color: rgb(134 120 107 / 0.46);
-  background: rgb(42 36 32 / 0.9);
-  box-shadow: 0 24px 80px rgb(0 0 0 / 0.3);
+  border-color: rgb(255 255 255 / 0.16);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.1), transparent 52%),
+    rgb(42 36 32 / 0.68);
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 0.36),
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -1px 0 rgb(255 255 255 / 0.04);
 }
 
 .login-mark {
@@ -1419,42 +1430,10 @@ textarea::placeholder {
   }
 
   .login-card {
-    --rabbit-outline: #3a4550;
-    --rabbit-fur: #cfdfec;
-    --rabbit-ear: #e8b9bc;
-    --sky: #5e86a4;
     width: 100%;
     margin: 0;
     padding: 28px 24px;
     border-radius: 24px;
-    color: #3d352f;
-    border-color: rgb(255 255 255 / 0.72);
-    background: linear-gradient(
-      145deg,
-      rgb(234 229 244 / 0.88),
-      rgb(226 236 244 / 0.84)
-    );
-    box-shadow:
-      0 24px 70px rgb(61 53 47 / 0.18),
-      inset 0 1px 0 rgb(255 255 255 / 0.72);
-    backdrop-filter: blur(14px) saturate(1.05);
-  }
-
-  .login-card h1,
-  .login-card .login-tagline {
-    color: #3d352f;
-  }
-
-  .login-card .login-note,
-  .login-card .muted {
-    color: #635a4f;
-  }
-
-  .login-card .google-btn {
-    color: #3d352f;
-    border-color: rgb(93 124 84 / 0.62);
-    background: rgb(255 255 255 / 0.66);
-    box-shadow: 0 8px 24px rgb(61 53 47 / 0.1);
   }
 
   .login-mark {
@@ -1476,16 +1455,6 @@ textarea::placeholder {
 
   :root[data-theme="dark"] .login {
     background-blend-mode: normal;
-  }
-
-  :root[data-theme="dark"] .login-card {
-    border-color: rgb(255 255 255 / 0.7);
-    background: linear-gradient(
-      145deg,
-      rgb(234 229 244 / 0.88),
-      rgb(226 236 244 / 0.84)
-    );
-    backdrop-filter: blur(14px) saturate(1.05);
   }
 }
 
