@@ -166,7 +166,11 @@ export function ImportPage() {
           }}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && fileInput.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            fileInput.current?.click();
+          }}
         >
           <p style={{ margin: 0, fontWeight: 600 }}>
             Drop a file here, or tap to choose

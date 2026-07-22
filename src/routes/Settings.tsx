@@ -32,6 +32,7 @@ export function Settings() {
               <button
                 key={d}
                 className={profile?.weekStartsOn === d ? "on" : ""}
+                aria-pressed={profile?.weekStartsOn === d}
                 onClick={() => void saveProfile({ weekStartsOn: d })}
               >
                 {d === "sunday" ? "Sunday" : "Monday"}
@@ -56,7 +57,12 @@ export function Settings() {
         <h2 className="card-title">Appearance</h2>
         <div className="seg">
           {(["system", "dark", "light"] as ThemePref[]).map((t) => (
-            <button key={t} className={pref === t ? "on" : ""} onClick={() => setPref(t)}>
+            <button
+              key={t}
+              className={pref === t ? "on" : ""}
+              aria-pressed={pref === t}
+              onClick={() => setPref(t)}
+            >
               {t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}

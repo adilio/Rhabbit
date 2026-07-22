@@ -157,6 +157,7 @@ export function HabitEditor({
                 key={t}
                 type="button"
                 className={type === t ? "on" : ""}
+                aria-pressed={type === t}
                 onClick={() => setType(t)}
               >
                 {TYPE_LABELS[t]}
@@ -199,13 +200,28 @@ export function HabitEditor({
         <div className="field" style={{ marginTop: 16 }}>
           <span className="field-label">Schedule</span>
           <div className="seg">
-            <button type="button" className={kind === "daily" ? "on" : ""} onClick={() => setKind("daily")}>
+            <button
+              type="button"
+              className={kind === "daily" ? "on" : ""}
+              aria-pressed={kind === "daily"}
+              onClick={() => setKind("daily")}
+            >
               Every day
             </button>
-            <button type="button" className={kind === "weekdays" ? "on" : ""} onClick={() => setKind("weekdays")}>
+            <button
+              type="button"
+              className={kind === "weekdays" ? "on" : ""}
+              aria-pressed={kind === "weekdays"}
+              onClick={() => setKind("weekdays")}
+            >
               Certain days
             </button>
-            <button type="button" className={kind === "timesPerWeek" ? "on" : ""} onClick={() => setKind("timesPerWeek")}>
+            <button
+              type="button"
+              className={kind === "timesPerWeek" ? "on" : ""}
+              aria-pressed={kind === "timesPerWeek"}
+              onClick={() => setKind("timesPerWeek")}
+            >
               Times per week
             </button>
           </div>
@@ -260,6 +276,7 @@ export function HabitEditor({
                 key={t}
                 type="button"
                 className={timeOfDay === t ? "on" : ""}
+                aria-pressed={timeOfDay === t}
                 onClick={() => setTimeOfDay(t)}
               >
                 {TIME_OF_DAY_LABELS[t]}

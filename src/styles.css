@@ -268,7 +268,7 @@ button {
 .brand-name {
   font-family: var(--font-display);
   font-weight: 750;
-  font-size: 1.12rem;
+  font-size: 1.08rem;
   letter-spacing: -0.02em;
 }
 
@@ -288,7 +288,7 @@ button {
   border-radius: 14px;
   background: color-mix(in srgb, var(--sky-wash) 54%, var(--bg-raised));
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
@@ -322,7 +322,7 @@ button {
   background: color-mix(in srgb, var(--sky-wash) 82%, var(--bg-raised));
   box-shadow: 0 10px 26px rgb(36 31 27 / 0.12);
   color: var(--text-muted);
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -375,7 +375,7 @@ button {
   padding: 6px 10px;
   border-radius: 14px;
   color: var(--text-faint);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
@@ -424,8 +424,10 @@ button {
   font-family: var(--font-display);
   font-size: 1.08rem;
   font-weight: 750;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   margin: 0 0 var(--space-sm);
+  text-wrap: balance;
 }
 
 /* Heading + deck. Replaces the inline `marginTop: -10` corrections that were
@@ -457,8 +459,10 @@ button {
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 7vw, 2.25rem);
   font-weight: 750;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   margin: 0;
+  text-wrap: balance;
 }
 
 .today-date {
@@ -627,7 +631,7 @@ button {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   color: color-mix(in srgb, var(--sky) 54%, var(--text-muted));
@@ -783,7 +787,7 @@ button {
 
 .habit-sub {
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   margin: 2px 0 0;
   display: flex;
   align-items: center;
@@ -826,7 +830,7 @@ button {
 .check.partial {
   border-color: var(--sage);
   color: var(--sage);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
@@ -964,7 +968,7 @@ body:has(.pwa-banner) .toast-zone {
   box-shadow: var(--shadow-card);
   padding: 9px 16px;
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   animation: toast-in 0.28s cubic-bezier(0.22, 1.4, 0.36, 1);
 }
 
@@ -984,7 +988,7 @@ body:has(.pwa-banner) .toast-zone {
      sage so it clears AA on the overlay surface (plain --sage is 4.20:1). */
   color: var(--sage-deep);
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   padding: 2px 6px;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1034,7 +1038,7 @@ body:has(.pwa-banner) .toast-zone {
   gap: 8px;
   min-height: 48px;
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   border-radius: 14px;
   border: 1px solid transparent;
@@ -1091,7 +1095,7 @@ body:has(.pwa-banner) .toast-zone {
 
 .button-small {
   min-height: 40px;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   padding: 7px 13px;
   border-radius: 10px;
 }
@@ -1117,7 +1121,7 @@ label.field {
 
 .field-label {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 6px;
@@ -1140,11 +1144,20 @@ textarea {
   transition: border-color 0.15s ease;
 }
 
+/* outline:none is scoped to :not(:focus-visible) so keyboard focus still gets
+   the global 3px ring — an unconditional `input:focus { outline: none }`
+   used to beat `:focus-visible` on specificity (0,1,1 vs 0,1,0) regardless of
+   source order, silently dropping the ring on every field for keyboard users. */
 input:focus,
 select:focus,
 textarea:focus {
-  outline: none;
   border-color: var(--sage);
+}
+
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none;
 }
 
 input::placeholder,
@@ -1168,7 +1181,7 @@ textarea::placeholder {
 .seg button,
 .chip {
   min-height: 40px;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
   background: var(--bg-overlay);
@@ -1212,13 +1225,13 @@ textarea::placeholder {
 
 .form-error {
   color: var(--red);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   margin: 10px 0;
 }
 
 .form-hint {
   color: var(--text-faint);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   margin-top: 6px;
 }
 
@@ -1281,8 +1294,11 @@ textarea::placeholder {
 .sheet-head h2 {
   font-family: var(--font-display);
   font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   margin: 0;
+  text-wrap: balance;
 }
 
 /* The only visible dismiss on a bottom sheet — it was 27x34px. */
@@ -1341,6 +1357,10 @@ textarea::placeholder {
   background: linear-gradient(90deg, transparent 58%, rgb(252 250 245 / 0.04));
 }
 
+/* The second of two sanctioned backdrop-filter spends (see DESIGN.md's
+   Backdrop-Blur Budget Rule) — functional, not decorative: this is the one
+   screen that sits on a photograph instead of a flat surface, and the blur is
+   what keeps the form legible without boxing it in an opaque panel. */
 .login-card {
   position: relative;
   z-index: 1;
@@ -1391,21 +1411,23 @@ textarea::placeholder {
   font-family: var(--font-display);
   font-size: clamp(2.6rem, 8vw, 3.4rem);
   font-weight: 750;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   margin: 18px 0 6px;
   color: var(--text);
+  text-wrap: balance;
 }
 
 .login-tagline {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   font-weight: 500;
   margin: 0 0 36px;
 }
 
 .login-note {
   color: var(--text-faint);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   margin-top: 28px;
   max-width: 320px;
 }
@@ -1500,7 +1522,9 @@ textarea::placeholder {
   font-family: var(--font-display);
   font-weight: 750;
   font-size: 1.75rem;
+  line-height: 1.3;
   margin: 0;
+  text-wrap: balance;
 }
 
 /* flex: none — these are flex items beside a heading, so `width` is only a
@@ -1539,6 +1563,7 @@ textarea::placeholder {
   text-align: center;
   font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
   color: var(--text-faint);
   text-transform: uppercase;
   padding: 4px 0;
@@ -1560,7 +1585,7 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   position: relative;
 }
@@ -1681,7 +1706,7 @@ textarea::placeholder {
 
 .stat-label {
   color: var(--text-faint);
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -1713,7 +1738,7 @@ textarea::placeholder {
    to speak in plain language about what happened rather than grade it. */
 .card-lede {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 650;
   color: var(--text);
   text-wrap: pretty;
@@ -1721,7 +1746,7 @@ textarea::placeholder {
 
 .card-lede-label {
   margin: var(--space-2xs) 0 0;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-faint);
 }
@@ -1744,7 +1769,7 @@ textarea::placeholder {
 
 .insight p {
   margin: 0;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
 }
 
@@ -1761,7 +1786,7 @@ textarea::placeholder {
   background: color-mix(in srgb, var(--sky-wash) 55%, var(--bg-raised));
   border: 1px solid color-mix(in srgb, var(--sky) 12%, var(--border));
   color: var(--text-muted);
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   text-wrap: pretty;
 }
 
@@ -1809,12 +1834,12 @@ textarea::placeholder {
 
 .settings-row-label {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .settings-row-sub {
   color: var(--text-faint);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   margin-top: 1px;
 }
 
@@ -1824,8 +1849,10 @@ textarea::placeholder {
   font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 750;
+  line-height: 1.3;
   letter-spacing: -0.02em;
   margin: var(--space-xl) 0 var(--space-md);
+  text-wrap: balance;
 }
 
 .empty {
@@ -1847,14 +1874,17 @@ textarea::placeholder {
 
 .empty h2 {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.3;
   margin: 0 0 6px;
   color: var(--text);
+  text-wrap: balance;
 }
 
 .empty p {
   margin: 0 0 20px;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
 }
 
 .muted {
@@ -1866,7 +1896,7 @@ textarea::placeholder {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .spinner {
@@ -1914,12 +1944,12 @@ textarea::placeholder {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
 .data-table th {
   text-align: left;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -2003,7 +2033,7 @@ textarea::placeholder {
   .sidebar-brand small {
     display: block;
     color: var(--text-faint);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     margin-top: 2px;
   }
 
@@ -2040,7 +2070,7 @@ textarea::placeholder {
     margin-top: 8px;
     padding: 12px;
     color: var(--text-faint);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }

@@ -25,43 +25,46 @@ export function Onboarding() {
 
   return (
     <div className="login">
-      <RabbitMark className="login-mark" />
-      <h1>Welcome</h1>
-      <p className="login-tagline">Let's set up your burrow.</p>
-      <form onSubmit={submit} style={{ width: "100%", maxWidth: 340, textAlign: "left" }}>
-        <label className="field">
-          <span className="field-label">What should Rhabbit call you?</span>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            autoFocus
-            required
-          />
-        </label>
-        <div className="field">
-          <span className="field-label">Week starts on</span>
-          <div className="seg">
-            {(["sunday", "monday"] as const).map((d) => (
-              <button
-                key={d}
-                type="button"
-                className={weekStartsOn === d ? "on" : ""}
-                onClick={() => setWeekStartsOn(d)}
-              >
-                {d === "sunday" ? "Sunday" : "Monday"}
-              </button>
-            ))}
+      <div className="login-card">
+        <RabbitMark className="login-mark" />
+        <h1>Welcome</h1>
+        <p className="login-tagline">Let's set up your burrow.</p>
+        <form onSubmit={submit} style={{ width: "100%", maxWidth: 340, textAlign: "left", margin: "0 auto" }}>
+          <label className="field">
+            <span className="field-label">What should Rhabbit call you?</span>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              autoFocus
+              required
+            />
+          </label>
+          <div className="field">
+            <span className="field-label">Week starts on</span>
+            <div className="seg">
+              {(["sunday", "monday"] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  className={weekStartsOn === d ? "on" : ""}
+                  aria-pressed={weekStartsOn === d}
+                  onClick={() => setWeekStartsOn(d)}
+                >
+                  {d === "sunday" ? "Sunday" : "Monday"}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        <button
-          className="button button-primary button-block"
-          disabled={saving || !name.trim()}
-        >
-          {saving ? "Saving…" : "Hop in"}
-        </button>
-      </form>
+          <button
+            className="button button-primary button-block"
+            disabled={saving || !name.trim()}
+          >
+            {saving ? "Saving…" : "Hop in"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

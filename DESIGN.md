@@ -68,7 +68,7 @@ typography:
     letterSpacing: "normal"
   label:
     fontFamily: "{typography.body.fontFamily}"
-    fontSize: "0.78rem"
+    fontSize: "0.7rem"
     fontWeight: 700
     lineHeight: 1.4
     letterSpacing: "0.01em"
@@ -78,6 +78,15 @@ typography:
     fontWeight: 700
     letterSpacing: "-0.02em"
     fontFeature: "tabular-nums lining-nums"
+  scale:
+    micro: "0.7rem"
+    label: "0.8rem"
+    secondary: "0.9rem"
+    body: "1rem"
+    title-sm: "1.08rem"
+    title-md: "1.25rem"
+    title-lg: "1.75rem"
+    numeric: "1.5rem"
 rounded:
   chip: "999px"
   sm: "10px"
@@ -272,20 +281,26 @@ with two muted accents doing all the semantic work.
 
 ### Hierarchy
 
-- **Display** (Fraunces 750, `clamp(2.6rem, 8vw, 3.4rem)`, `-0.03em`): the login wordmark only. The single largest type in the product, and it appears on a screen nobody spends time on.
-- **Headline** (Fraunces 750, `clamp(1.75rem, 7vw, 2.25rem)`, `-0.02em`): the Today greeting. The one place a fluid scale is justified, because it wraps a variable-length name.
-- **Title** (Fraunces 750, `1.75rem` page titles / `1.25rem` sheet headings / `1.08rem` card titles, `-0.02em` to `-0.01em`): section and surface headings. Fixed rem, not fluid.
-- **Body** (Inter 450, `1rem`, `1.55`): prose, insights, habit names at weight 700. Prose is naturally capped by the 760–980px shell; anything longer-form should hold 65–75ch.
-- **Label** (Inter 600–700, `0.72–0.88rem`, `0.01em`): tab labels, group labels, field labels, chip text, habit sub-lines. Sentence case, never uppercase.
+- **Display** (Fraunces 750, `clamp(2.6rem, 8vw, 3.4rem)`, `1.1`, `-0.03em`): the login wordmark only. The single largest type in the product, and it appears on a screen nobody spends time on.
+- **Headline** (Fraunces 750, `clamp(1.75rem, 7vw, 2.25rem)`, `1.2`, `-0.02em`): the Today greeting. The one place a fluid scale is justified, because it wraps a variable-length name.
+- **Title** (Fraunces 750, `1.75rem` page/calendar titles / `1.25rem` sheet headings and empty-state titles / `1.08rem` card titles, login tagline, and the brand wordmark, `1.3`, `-0.02em` to `-0.01em`): section and surface headings. Fixed rem, not fluid.
+- **Body** (Inter 450, `1rem`, `1.55`): prose, insights, habit names at weight 700, the card-lede datum sentence.
+- **Secondary** (Inter 500–600, `0.9rem`): near-body text that isn't primary content — toasts, form errors, the today date, insight and recap sentences, button labels, settings row labels.
+- **Label** (Inter 600–700, `0.8rem`): field labels, hints, chip and segmented-control text, table cells, calendar days, small buttons.
+- **Micro** (Inter 600–700, `0.7rem`): tab labels, group labels, stat labels, table column headers, the sidebar signature. The floor of the type scale — nothing in the product goes smaller.
 - **Numeric** (Inter 700, `1.5rem`, `tabular-nums lining-nums`): stat values. Numbers stay on Inter deliberately — Fraunces figures wobble in a column.
+
+The full ramp is nine steps at roughly a 1.1–1.2 ratio between neighbors: `0.7 / 0.8 / 0.9 / 1 / 1.08 / 1.25 / 1.5 / 1.75rem` plus the two fluid clamps. Nothing outside this ramp; a size that doesn't fit belongs to the nearest step, not a new one-off value. Control glyphs (the sheet's `×` close, the stepper's `−`/`+`, emoji inside the toast and insight rows) are exempt — they're iconography sized to their container, not reading text, and don't count against the ramp.
 
 ### Named Rules
 
 **The Sans-For-Work Rule.** Fraunces is forbidden in labels, buttons, form fields, table cells, and any number. It appears in headings, the wordmark, the login tagline, and empty-state titles. Anywhere the user is *doing* rather than *arriving*, the type is Inter.
 
-**The No-Uppercase-Eyebrow Rule.** Tracked uppercase micro-type is permitted in exactly two places: data-table column headers and the `4dl` sidebar signature. It is forbidden above section headings. Time-of-day groups use sentence case with a glyph, and that is the pattern any new grouping follows.
+**The No-Uppercase-Eyebrow Rule.** Tracked uppercase micro-type is permitted in exactly two places: data-table column headers and the `4dl` sidebar signature. It is forbidden above section headings. Time-of-day groups use sentence case with a glyph, and that is the pattern any new grouping follows. Calendar weekday initials are uppercase too and take the same 0.05em tracking as the other two — uppercase without tracking is the one thing this rule can't allow.
 
 **The Fixed-Scale Rule.** Only two elements are fluid — the login wordmark and the Today greeting. Everything else is a fixed rem step. Clamp-sizing a card title makes it worse in a sidebar, not better.
+
+**The Nine-Step Rule.** Every heading, label, and body of text in the product resolves to one of the nine ramp steps above. A new component doesn't invent `0.86rem` because it "looks a little tight" — it takes the nearest step and lets weight or color carry the rest of the distinction.
 
 ## 4. Elevation
 
@@ -306,7 +321,7 @@ Audit test: if a surface sitting *on* the page casts a shadow you can see from a
 
 **The Ladder Rule.** Page → hairline row → resting card → card shadow → floating banner → sheet. Every new surface must claim a rung on that ladder. Two surfaces at the same rung must not be nested inside one another. When a same-rung surface genuinely belongs inside a card, it surrenders its own surface rather than stacking one: `.card .stat` drops its background, border and padding and lets the grid gap separate the tiles, and `.card .table-wrap` bleeds to the card's edges keeping only its horizontal hairlines. A bordered box inside a bordered box gives two 1px lines 20px apart and two nested 20px radii, which reads as a rendering artifact, not as depth.
 
-**The Backdrop-Blur Budget Rule.** `backdrop-filter` is spent in exactly one place: the bottom tab bar (`blur(14px)` over 90% raised). It is what makes content scroll believably under the bar. Glass anywhere else is decoration and is prohibited.
+**The Backdrop-Blur Budget Rule.** `backdrop-filter` is spent in two places, both functional rather than decorative. The bottom tab bar (`blur(14px)` over 90% raised) is what makes content scroll believably under the bar. The login card (`blur(28px) saturate(1.28)`) is what makes the sign-in form legible over a full-bleed photo without boxing it in an opaque panel — the one screen in the product that sits on top of a photograph rather than a flat surface. Glass anywhere else is decoration and is prohibited.
 
 ## 5. Components
 
@@ -400,7 +415,7 @@ Bottom sheets on mobile (28px top corners, full width, 88dvh max, sliding up 40p
 - **Don't** put a tiny tracked uppercase eyebrow above a section heading. Time-of-day groups set the pattern: sentence case with a glyph.
 - **Don't** use a colored side stripe as a decorative accent. The 4px inset bar on a completed row is the one sanctioned instance — it is semantic (this is done) and it is the exception, not a pattern to copy.
 - **Don't** put Fraunces on a button, a form label, a table cell, or a number.
-- **Don't** add `backdrop-filter` anywhere but the mobile tab bar. The blur budget is spent.
+- **Don't** add `backdrop-filter` anywhere but the mobile tab bar and the login card. The blur budget is spent.
 - **Don't** use `background-clip: text` with a gradient, anywhere, for anything.
 - **Don't** add a second saturated warm element. The carrot's rarity is the entire reason reaching it registers.
 - **Don't** bound a control with Border Strong. It is a surface hairline (1.42:1 on a habit row) and fails WCAG 1.4.11's 3:1 for a control boundary. Controls take Border Control. A selected state must not *reduce* the boundary contrast below the unselected one.
