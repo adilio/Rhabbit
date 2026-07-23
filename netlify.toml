@@ -9,6 +9,15 @@
   status = 301
   force = true
 
+# Firebase Authentication's OAuth helpers must be served on the same branded
+# domain configured in src/lib/firebase.ts. This is a transparent proxy (200
+# rewrite), not a browser redirect, so Google keeps rhabbit.4dl.ca visible.
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://rhabbit-e8f9d.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

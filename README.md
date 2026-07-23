@@ -33,6 +33,13 @@ and the buildbot clones over SSH with a read-only deploy key. If a deploy is
 ever needed by hand: `npm run build && netlify deploy --prod --dir dist
 --no-build` (local `.env` supplies the Firebase config).
 
+Production uses `rhabbit.4dl.ca` as Firebase's auth domain and Netlify proxies
+`/__/auth/*` to the Firebase Hosting auth helpers. Keep `rhabbit.4dl.ca` in
+Firebase Authentication's authorized domains and keep
+`https://rhabbit.4dl.ca/__/auth/handler` in the Google OAuth web client's
+authorized redirect URIs. Local development continues to use the
+`VITE_FIREBASE_AUTH_DOMAIN` value from `.env`.
+
 ## Access control
 
 Rhabbit is private. Server-side Firestore rules (`firestore.rules`) only
