@@ -1452,10 +1452,6 @@ textarea::placeholder {
   text-align: center;
 }
 
-.brand-footer strong {
-  color: var(--text-muted);
-}
-
 .brand-footer a {
   color: var(--sage);
 }
