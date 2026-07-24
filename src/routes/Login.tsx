@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../lib/auth";
 import { RabbitMark } from "../components/RabbitMark";
 import { IconGoogle } from "../components/Icons";
+import { BrandFooter } from "../components/BrandFooter";
 
 export function Login({ denied }: { denied: boolean }) {
   const { signIn, signOut, user } = useAuth();
@@ -46,6 +47,7 @@ export function Login({ denied }: { denied: boolean }) {
         <p className="login-note">
           Your habit data is private. No ads. No selling your data.
         </p>
+        <BrandFooter />
       </div>
     </div>
   );

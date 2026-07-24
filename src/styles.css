@@ -1439,6 +1439,27 @@ textarea::placeholder {
   max-width: 320px;
 }
 
+.brand-footer {
+  display: grid;
+  gap: 4px;
+  margin: 28px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-faint);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.brand-footer strong {
+  color: var(--text-muted);
+}
+
+.brand-footer a {
+  color: var(--sage);
+}
+
 .login-denied {
   max-width: 340px;
   margin-inline: auto;

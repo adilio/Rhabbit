@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../lib/auth";
+import { BrandFooter } from "../components/BrandFooter";
 import { useStore } from "../lib/store";
 import { useTheme, type ThemePref } from "../lib/theme";
 import { exportCsv, exportJson } from "../lib/export";
@@ -151,13 +152,7 @@ export function Settings() {
         </button>
       </div>
 
-      <p className="faint small" style={{ textAlign: "center", margin: "24px 0" }}>
-        Rhabbit · a{" "}
-        <a href="https://4dl.ca" target="_blank" rel="noreferrer">
-          4dl app
-        </a>{" "}
-        · take it one hop at a time 🐇
-      </p>
+      <BrandFooter />
     </>
   );
 }
