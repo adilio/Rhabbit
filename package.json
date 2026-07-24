@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "ci:verify": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.3.0",
@@ -24,6 +27,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "typescript": "^5.8.3",
     "vite": "^7.0.0",
-    "vite-plugin-pwa": "^1.0.1"
+    "vite-plugin-pwa": "^1.0.1",
+    "vitest": "^3.2.7"
   }
 }
