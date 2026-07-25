@@ -33,6 +33,26 @@ and the buildbot clones over SSH with a read-only deploy key. If a deploy is
 ever needed by hand: `npm run build && netlify deploy --prod --dir dist
 --no-build` (local `.env` supplies the Firebase config).
 
+### Tests
+
+```bash
+npm test           # unit tests for dates, schedules, and stats
+npm run test:rules # Firestore security rules, against the local emulator
+npm run ci:verify  # everything CI runs: typecheck, both suites, build
+```
+
+`test:rules` boots the Firestore emulator, which needs a Java runtime on
+`PATH`. Homebrew's `openjdk` is keg-only, so it needs to be added explicitly:
+
+```bash
+brew install openjdk
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"   # add to ~/.zshrc to persist
+```
+
+The rules suite asserts denials as well as grants — cross-user reads,
+non-allowlisted accounts, unverified emails, and self-granting an allowlist
+entry. Changing `firestore.rules` without updating it should turn CI red.
+
 Production uses `rhabbit.4dl.ca` as Firebase's auth domain and Netlify proxies
 `/__/auth/*` to the Firebase Hosting auth helpers. Keep `rhabbit.4dl.ca` in
 Firebase Authentication's authorized domains and keep

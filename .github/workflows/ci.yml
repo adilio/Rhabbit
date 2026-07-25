@@ -22,11 +22,18 @@ jobs:
           node-version: "22"
           cache: npm
 
+      # The Firestore emulator that backs the security-rules tests is a Java
+      # process.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Install dependencies
         run: npm ci
 
-      # Typecheck + vitest + production build. The build step matters on its
-      # own here: Netlify deploys straight from main, so a build that fails in
-      # CI is a build that would have failed the deploy.
+      # Typecheck + vitest + rules tests + production build. The build step
+      # matters on its own here: Netlify deploys straight from main, so a
+      # build that fails in CI is a build that would have failed the deploy.
       - name: Verify
         run: npm run ci:verify

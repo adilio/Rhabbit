@@ -10,3 +10,5 @@ dev-dist
 *.local
 test-artifacts/
 .impeccable/
+firestore-debug.log
+firebase-debug.log
