@@ -10,10 +10,11 @@ web
 
 ## Users
 
-A small invited circle — the maker, a partner, and a handful of allowlisted
-friends and family. Access is granted by hand in the Firebase console, so the
-user base never grows past people who were personally let in. Everyone has
-their own private data; nobody sees anyone else's.
+A small invited circle — the maker, a partner, and allowlisted close friends.
+Anyone who knows the maker personally can reach out to ask for access. Access
+is granted by hand in the Firebase console, so the user base never grows past
+people who were personally let in. Everyone has their own private data; nobody
+sees anyone else's.
 
 They open Rhabbit standing up: mid-morning with a coffee, last thing at night
 in bed, one-handed on a phone. The job is to record that a thing happened and

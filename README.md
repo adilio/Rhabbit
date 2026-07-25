@@ -2,8 +2,9 @@
 
 > Take it one hop at a time.
 
-A calm, private habit tracker for two — part of the [4dl Apps](https://4dl.ca)
-family. Live at [rhabbit.4dl.ca](https://rhabbit.4dl.ca).
+A calm, private habit tracker for a small circle of friends — part of the
+[4dl Apps](https://4dl.ca) family. Live at
+[rhabbit.4dl.ca](https://rhabbit.4dl.ca).
 
 - **One-tap logging** on a mobile-first Today screen, with undo everywhere
 - **Forgiving progress** — skips, pauses, and comebacks instead of guilt
@@ -62,10 +63,11 @@ authorized redirect URIs. Local development continues to use the
 
 ## Access control
 
-Rhabbit is private. Server-side Firestore rules (`firestore.rules`) only
-admit Google accounts whose verified email exists in the `allowlist`
-collection — add or remove emails in the Firebase console (doc ID = email,
-contents can be empty).
+Rhabbit is open to Adil's close friends. If you know him personally, reach out
+to ask for access. Server-side Firestore rules (`firestore.rules`) only admit
+Google accounts whose verified email exists in the `allowlist` collection —
+add or remove emails in the Firebase console (doc ID = email, contents can be
+empty). Each person's habit data remains private to their account.
 
 ## Data model
 

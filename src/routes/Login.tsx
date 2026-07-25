@@ -31,7 +31,8 @@ export function Login({ denied }: { denied: boolean }) {
           <>
             <p className="muted login-denied">
               <strong>{user.email}</strong> isn't on the guest list for this
-              burrow. Rhabbit is a private app for Adil &amp; Marla.
+              burrow. Rhabbit is open to Adil's close friends—if you know him
+              personally, reach out to ask for access.
             </p>
             <button className="button button-ghost" onClick={signOut}>
               Sign out and try another account
