@@ -1456,11 +1456,6 @@ textarea::placeholder {
   color: var(--sage);
 }
 
-.login-denied {
-  max-width: 340px;
-  margin-inline: auto;
-}
-
 @media (max-width: 820px) {
   .login {
     align-items: center;
@@ -2010,6 +2005,95 @@ textarea::placeholder {
 .drop-zone.over {
   border-color: var(--sage);
   background: color-mix(in srgb, var(--sage) 6%, transparent);
+}
+
+/* ===== Access: requesting, waiting, and approving ========================= */
+
+/* Screen-reader-only text, for badges whose number alone reads as bare
+   context ("3" tells a screen reader nothing about what is waiting). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Sits over the tab icon on mobile; becomes a right-aligned pill in the
+   desktop sidebar, where the tab is a horizontal row. */
+.tab-badge {
+  position: absolute;
+  top: 2px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  /* --sky is a mid-tone that only reaches 3.87:1 against white; --sky-deep is
+     the fill to use whenever sky carries --ink-on-accent text. */
+  background: var(--sky-deep);
+  color: var(--ink-on-accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.access-who {
+  margin-bottom: var(--space-xs);
+}
+
+.access-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  text-align: left;
+  margin-bottom: var(--space-sm);
+}
+
+.access-status {
+  max-width: 340px;
+  margin: var(--space-sm) auto var(--space-md);
+}
+
+.access-list {
+  list-style: none;
+  margin: 0 0 var(--space-sm);
+  padding: 0;
+}
+
+.access-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.access-row:last-child {
+  border-bottom: none;
+}
+
+.access-person {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Long addresses must wrap rather than push the buttons off the row. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.access-note {
+  margin: var(--space-2xs) 0;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* ===== Desktop sidebar layout ============================================ */

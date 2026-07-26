@@ -1,7 +1,10 @@
 import { lazy, Suspense } from "react";
 import { NavLink, Route, Routes, Navigate } from "react-router-dom";
 import { useAuth } from "./lib/auth";
+import { usePendingRequestCount } from "./lib/admin";
 import { Login } from "./routes/Login";
+import { AccessGate } from "./routes/AccessGate";
+import { Access } from "./routes/Access";
 import { Onboarding } from "./routes/Onboarding";
 import { Today } from "./routes/Today";
 import { History } from "./routes/History";
@@ -15,6 +18,7 @@ const ImportPage = lazy(() =>
 import {
   IconCalendar,
   IconInsights,
+  IconPeople,
   IconSettings,
   IconToday,
 } from "./components/Icons";
@@ -23,9 +27,15 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { PwaStatus } from "./components/PwaStatus";
 
 export function App() {
-  const { user, profile, denied } = useAuth();
+  const { user, profile, membership, accessRequest, approved, isAdmin } = useAuth();
+  const pendingCount = usePendingRequestCount(isAdmin);
 
-  if (user === undefined || (user && profile === undefined)) {
+  const resolving =
+    user === undefined ||
+    (user && (membership === undefined || accessRequest === undefined)) ||
+    (approved && profile === undefined);
+
+  if (resolving) {
     return (
       <div className="screen-center">
         <div className="spinner" role="status" aria-label="Loading" />
@@ -33,7 +43,9 @@ export function App() {
     );
   }
 
-  if (!user || denied) return <Login denied={denied} />;
+  if (!user) return <Login />;
+  // Signed in but not on the allowlist: ask to be let in, then wait.
+  if (!approved) return <AccessGate />;
   if (!profile) return <Onboarding />;
 
   return (
@@ -54,6 +66,14 @@ export function App() {
           <Tab to="/history" label="History" icon={<IconCalendar />} />
           <Tab to="/insights" label="Progress" icon={<IconInsights />} />
           <Tab to="/settings" label="Settings" icon={<IconSettings />} />
+          {isAdmin && (
+            <Tab
+              to="/access"
+              label="Access"
+              icon={<IconPeople />}
+              badge={pendingCount}
+            />
+          )}
         </nav>
         <div className="sidebar-footer">
           <ThemeToggle />
@@ -74,6 +94,7 @@ export function App() {
           <Route path="/history" element={<History />} />
           <Route path="/insights" element={<Insights />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/access" element={<Access />} />
           <Route
             path="/import"
             element={
@@ -93,6 +114,14 @@ export function App() {
         <Tab to="/history" label="History" icon={<IconCalendar />} />
         <Tab to="/insights" label="Progress" icon={<IconInsights />} />
         <Tab to="/settings" label="Settings" icon={<IconSettings />} />
+        {isAdmin && (
+          <Tab
+            to="/access"
+            label="Access"
+            icon={<IconPeople />}
+            badge={pendingCount}
+          />
+        )}
       </nav>
       <PwaStatus />
     </div>
@@ -103,10 +132,13 @@ function Tab({
   to,
   label,
   icon,
+  badge = 0,
 }: {
   to: string;
   label: string;
   icon: React.ReactNode;
+  /** Count of things waiting; hidden at zero. */
+  badge?: number;
 }) {
   return (
     <NavLink
@@ -116,6 +148,12 @@ function Tab({
     >
       {icon}
       <span>{label}</span>
+      {badge > 0 && (
+        <span className="tab-badge">
+          {badge}
+          <span className="sr-only"> waiting for a decision</span>
+        </span>
+      )}
     </NavLink>
   );
 }

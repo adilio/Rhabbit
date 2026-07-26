@@ -52,6 +52,40 @@ export interface Profile {
   createdAt: number;
 }
 
+/** Members use the app; admins also approve and revoke other people. */
+export type AccessRole = "member" | "admin";
+
+export type AccessStatus = "pending" | "approved" | "revoked";
+
+/**
+ * One approved account. The document id is the lowercased email, and its mere
+ * existence is what the security rules treat as access.
+ */
+export interface AllowlistEntry {
+  email: string;
+  role: AccessRole;
+  displayName: string;
+  approvedAt: number;
+  approvedBy: string;
+}
+
+/**
+ * The paper trail for one person's access, kept even after revoking so a
+ * declined account can't quietly ask again every day.
+ */
+export interface AccessRequest {
+  email: string;
+  uid: string;
+  displayName: string;
+  photoURL: string;
+  /** Optional "you know me from…" note the requester writes. */
+  note: string;
+  status: AccessStatus;
+  requestedAt: number;
+  decidedAt: number | null;
+  decidedBy: string;
+}
+
 export interface ImportBatch {
   id: string;
   filename: string;

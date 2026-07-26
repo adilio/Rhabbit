@@ -2,23 +2,88 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Private app: only Google accounts whose email exists in the
-    // allowlist collection may read or write anything.
-    function allowlisted() {
-      return request.auth != null
-        && request.auth.token.email_verified
-        && exists(/databases/$(database)/documents/allowlist/$(request.auth.token.email));
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified;
     }
 
-    // Allowlist docs are managed in the Firebase console only.
+    function callerEmail() {
+      return request.auth.token.email;
+    }
+
+    function allowlistPath(email) {
+      return /databases/$(database)/documents/allowlist/$(email);
+    }
+
+    // Private app: an allowlist document existing for your email *is* your
+    // access. Removing the document removes access everywhere at once.
+    function approved() {
+      return signedIn() && exists(allowlistPath(callerEmail()));
+    }
+
+    // Admins are approved users whose own allowlist row carries role 'admin'.
+    // The first admin is bootstrapped by hand in the Firebase console; after
+    // that, admins promote each other from the in-app admin screen.
+    function isAdmin() {
+      return approved()
+        && get(allowlistPath(callerEmail())).data.role == 'admin';
+    }
+
     match /allowlist/{email} {
-      allow read: if request.auth != null && request.auth.token.email == email;
-      allow write: if false;
+      // Anyone signed in may read their own row, which is how the app tells
+      // "approved" from "still waiting" without a server. Admins read the
+      // whole roster.
+      allow get: if signedIn() && (callerEmail() == email || isAdmin());
+      allow list: if isAdmin();
+
+      // Only admins grant access, and every row must name its own email and a
+      // real role — this is the self-promotion boundary.
+      allow create: if isAdmin()
+        && request.resource.data.email == email
+        && request.resource.data.role in ['member', 'admin'];
+
+      // Same as create, plus: an admin may not demote themselves. Dropping
+      // your own admin role could leave the burrow with no keyholder.
+      allow update: if isAdmin()
+        && request.resource.data.email == email
+        && request.resource.data.role in ['member', 'admin']
+        && (callerEmail() != email
+            || request.resource.data.role == resource.data.role);
+
+      // For the same reason, an admin cannot revoke themselves.
+      allow delete: if isAdmin() && callerEmail() != email;
+    }
+
+    match /accessRequests/{email} {
+      allow get: if signedIn() && (callerEmail() == email || isAdmin());
+      allow list: if isAdmin();
+
+      // A signed-in stranger may file one request, for their own address, in
+      // the pending state. Since create only applies when no document exists,
+      // a revoked row blocks silent re-requests until an admin clears it.
+      allow create: if signedIn()
+        && callerEmail() == email
+        && request.resource.data.email == email
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending';
+
+      // Admins also create rows directly, so that revoking someone who was
+      // added straight to the allowlist still leaves a record.
+      allow create: if isAdmin()
+        && request.resource.data.email == email
+        && request.resource.data.status in ['pending', 'approved', 'revoked'];
+
+      // Deciding a request is admin-only: a requester cannot approve itself.
+      allow update: if isAdmin()
+        && request.resource.data.email == email
+        && request.resource.data.status in ['pending', 'approved', 'revoked'];
+
+      // Deleting the record is how an admin lets someone ask again.
+      allow delete: if isAdmin();
     }
 
     // Each user owns their subtree: profile, habits, entries, importBatches.
     match /users/{uid}/{document=**} {
-      allow read, write: if allowlisted() && request.auth.uid == uid;
+      allow read, write: if approved() && request.auth.uid == uid;
     }
   }
 }

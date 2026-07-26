@@ -45,6 +45,16 @@ export function IconSettings({ className }: IconProps) {
   );
 }
 
+export function IconPeople({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} {...base} aria-hidden="true">
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M3 20a6 6 0 0 1 12 0" />
+      <path d="M16.5 5.3a3.5 3.5 0 0 1 0 6.4M18 20a6 6 0 0 0-2.2-4.65" />
+    </svg>
+  );
+}
+
 export function IconCheck({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} {...base} strokeWidth={3} aria-hidden="true">

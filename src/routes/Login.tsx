@@ -4,8 +4,8 @@ import { RabbitMark } from "../components/RabbitMark";
 import { IconGoogle } from "../components/Icons";
 import { BrandFooter } from "../components/BrandFooter";
 
-export function Login({ denied }: { denied: boolean }) {
-  const { signIn, signOut, user } = useAuth();
+export function Login() {
+  const { signIn } = useAuth();
   const [error, setError] = useState("");
 
   const handleSignIn = async () => {
@@ -27,23 +27,10 @@ export function Login({ denied }: { denied: boolean }) {
         <h1>Rhabbit</h1>
         <p className="login-tagline">Take it one hop at a time.</p>
         <p className="login-promise">A subscription-free habit tracker.</p>
-        {denied && user ? (
-          <>
-            <p className="muted login-denied">
-              <strong>{user.email}</strong> isn't on the guest list for this
-              burrow. Rhabbit is open to Adil's close friends—if you know him
-              personally, reach out to ask for access.
-            </p>
-            <button className="button button-ghost" onClick={signOut}>
-              Sign out and try another account
-            </button>
-          </>
-        ) : (
-          <button className="google-btn" onClick={handleSignIn}>
-            <IconGoogle />
-            Continue with Google
-          </button>
-        )}
+        <button className="google-btn" onClick={handleSignIn}>
+          <IconGoogle />
+          Continue with Google
+        </button>
         {error && <p className="form-error">{error}</p>}
         <p className="login-note">
           Your habit data is private. No ads. No selling your data.

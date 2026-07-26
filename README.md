@@ -63,11 +63,38 @@ authorized redirect URIs. Local development continues to use the
 
 ## Access control
 
-Rhabbit is open to Adil's close friends. If you know him personally, reach out
-to ask for access. Server-side Firestore rules (`firestore.rules`) only admit
-Google accounts whose verified email exists in the `allowlist` collection —
-add or remove emails in the Firebase console (doc ID = email, contents can be
-empty). Each person's habit data remains private to their account.
+Rhabbit is open to Adil's close friends. Anyone can sign in with Google, but
+signing in only gets you as far as a request: server-side Firestore rules
+(`firestore.rules`) admit a Google account to the app itself only once its
+verified email has a document in the `allowlist` collection.
+
+The loop runs entirely in-app, no console visit required:
+
+1. A new account signs in and lands on the access gate, where it can send one
+   request with a short note.
+2. An admin sees the request under **Access** (a badge on the nav counts who
+   is waiting) and approves or declines it.
+3. Approving writes the `allowlist` row and stamps the request, atomically.
+   The new member is let in on their next load — no second sign-in.
+
+Admins can also revoke a member, promote a member to admin, and clear a
+turned-away record so that person may ask again. Two things are deliberately
+impossible, because either would leave the app with no one able to let anyone
+in: an admin cannot revoke themselves, and cannot demote themselves.
+
+Revoking removes the `allowlist` row and leaves a `revoked` record behind.
+That record is load-bearing — while it exists, the account cannot file a
+fresh request, so a declined person can't re-ask every day. Their habit data
+is left untouched in case you let them back in.
+
+**Bootstrapping the first admin** is the one manual step, and it has to be:
+rules that let you appoint yourself would let anyone appoint themselves. In
+the Firebase console, give your own `allowlist/{email}` document a field
+`role: "admin"`. Rows added before roles existed keep working as plain
+members.
+
+Each person's habit data remains private to their account — admin is a role
+for granting access, not a key to anyone's habits, and the rules enforce that.
 
 ## Data model
 
@@ -76,7 +103,8 @@ users/{uid}                    profile: displayName, timezone, weekStartsOn
 users/{uid}/habits/{id}        name, type, target, schedule, timeOfDay, …
 users/{uid}/entries/{habitId_date}   status, value, note — one doc per day
 users/{uid}/importBatches/{id} filename, counts — enables import undo
-allowlist/{email}              presence = access (console-managed)
+allowlist/{email}              presence = access; role: member | admin
+accessRequests/{email}         status: pending | approved | revoked, note, …
 ```
 
 Entries key on a **local date string** (`2026-07-19`), so history never
