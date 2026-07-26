@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { NavLink, Route, Routes, Navigate } from "react-router-dom";
+import { NavLink, Route, Routes, Navigate } from "react-router";
 import { useAuth } from "./lib/auth";
 import { usePendingRequestCount } from "./lib/admin";
 import { Login } from "./routes/Login";

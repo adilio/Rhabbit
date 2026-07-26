@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useStore } from "../lib/store";
 import { useToast } from "../components/Toast";
 import {

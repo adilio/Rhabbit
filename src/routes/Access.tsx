@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { useAuth } from "../lib/auth";
 import { useToast } from "../components/Toast";
 import {
