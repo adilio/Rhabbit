@@ -32,5 +32,10 @@
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.0.1",
     "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "gaxios": {
+      "uuid": "^14.0.1"
+    }
   }
 }
