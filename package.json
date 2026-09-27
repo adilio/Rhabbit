@@ -31,9 +31,10 @@
     "typescript": "^5.8.3",
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.0.1",
-    "vitest": "^3.2.7"
+    "vitest": "^5.0.2"
   },
   "overrides": {
+    "@opentelemetry/core": "^2.11.0",
     "gaxios": {
       "uuid": "^14.0.1"
     }
